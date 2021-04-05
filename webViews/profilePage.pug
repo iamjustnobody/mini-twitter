@@ -1,0 +1,27 @@
+extends layouts/main-layout
+//- similar to home.pug or postPage here
+
+block content
+    script. 
+        //-var userLoggedInJs_profile=!{userLoggedInJs_profile} //but use userLoggedInJs in common.js
+        var userLoggedInJs=!{userLoggedInJs_profile}
+    //-.testLoginUserProfile(data-currentUser=`${userLoggedInJs_profile}`)
+        //-`${userLoggedInJs_profile}` or userLoggedInJs_profile or (userLoggedIn_profile or not)
+    //-if testLoginUserProfile, push below inside testLoginUserProfile
+    if !profileUser
+        span.errMsg User not found - check the URL you are trying to access
+    else
+        //-span #{profileUser.fName}
+        .profileHeaderContainer 
+            .coverPhotoContainer 
+
+                .userImageContainer 
+                    img(src=`${profileUser.profilePic}`,alt="User profile image")
+                        //- or src=profileUser.profilePic
+        .postsContainer 
+
+        +createReplyModal(userLoggedIn_profile)
+        +createDeletePostModal(userLoggedIn_profile)
+
+block scripts 
+    script(src='/js/profilePage.js')

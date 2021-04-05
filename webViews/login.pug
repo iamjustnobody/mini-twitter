@@ -1,0 +1,11 @@
+extends layouts/login-layout
+
+block content 
+    .loginContainer 
+        h1 Login 
+        form(action="", method="post") 
+            e.errorMessage #{errorMessage}
+            input#userNameTextBox(type="text", name="logUserName",placeholder='Username or email',required="",value=logUserName)
+            input#userPwdTextBox(type="password", name="logPassword",placeholder='Password',required)
+            input(type="submit", value="Login")
+        a(href="/register") Need an account? Please register here. 
