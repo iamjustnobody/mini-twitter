@@ -4,21 +4,70 @@ extends layouts/main-layout
 block content
     script. 
         //-var userLoggedInJs_profile=!{userLoggedInJs_profile} //but use userLoggedInJs in common.js
-        var userLoggedInJs=!{userLoggedInJs_profile}
+        var userLoggedInJs='!{`${userLoggedIn_profile}`}'
+        //-!{userLoggedInJs_profile} or !{`${userLoggedInJs_profile}`} 
     //-.testLoginUserProfile(data-currentUser=`${userLoggedInJs_profile}`)
         //-`${userLoggedInJs_profile}` or userLoggedInJs_profile or (userLoggedIn_profile or not)
     //-if testLoginUserProfile, push below inside testLoginUserProfile
     if !profileUser
         span.errMsg User not found - check the URL you are trying to access
     else
+        script. 
+            var profileID='!{`${profileUser._id}`}'
+            //-var profileID='!{profileUser._id}' ok too //or '!{`${selectedTab}`}'
+        script. 
+            var selected='!{selectedTab}'
+            //-alert(selected)
+        script. 
+            var selectRps='!{selectReplies}'
+            //-alert(selectRps)
+            //-alert(typeof selectRps) //string "" or "true"
+            //-if false (as router.get('/:username') @profileRoutes.js not set selectReplies=false)& selectRps=!{selectReplies}, alert shows undefined n web shows all posts
+            //-selectRps=!{selectReplies} true boolean or undefined undefined shown in alert here & profilePage.js
+            //-!{`${selectReplies}`} same as above
+            //- selectRps='!{`${selectReplies}`}' "true" string or undefined string @alert&profilePage.js; selectRps='!{selectReplies}' "true" string or empty stirng '' @alert&profilePage
+            //- if router.get('/:username') @profileRoutes.js set selectReplies=false, then above false (boolean) or "false" (str) -> same type as true "true"
         //-span #{profileUser.fName}
-        .profileHeaderContainer 
+        .profileHeaderContainer
             .coverPhotoContainer 
 
                 .userImageContainer 
                     img(src=`${profileUser.profilePic}`,alt="User profile image")
                         //- or src=profileUser.profilePic
-        .postsContainer 
+            
+            .profileButtonsContainer
+                if profileUser._id!=userLoggedIn_profile._id 
+                    a.profileButton(href=`/messages/${profileUser._id}`)
+                        i.fas.fa-envelope
+                    +createFollowButton(profileUser,true)
+
+            .userDetailsContainer
+                span.displayName=`${profileUser.fName} ${profileUser.lName}`
+                //- or span.displayName #{profileUser.fName} #{profileUser.lName}
+                span.username=`@${profileUser.username}`
+                //-or span.username #{profileUser.fName}
+                span.description #{profileUser.description}
+
+                .followersContainer 
+                    a(href=`/profile/${profileUser.username}/following`)
+                        span.value #{0}
+                        span Following
+                    a(href=`/profile/${profileUser.username}/followers`)
+                        span.value=`${0}`
+                        span Followers
+        
+        .tabsContainer
+            +createTab("Posts",`/profile/${profileUser.username}`,!selectReplies)
+            //- selectReplies!=true
+            +createTab("Replies",`/profile/${profileUser.username}/replies`,selectReplies)
+            //-selectReplies==true //selectReplies is boolean type
+            //- or +createTab("Posts",`/profile/${profileUser.username}`,selectedTab!="replies")
+            //- or +createTab("Replies",`/profile/${profileUser.username}/replies`,selectedTab=="replies")
+
+        .postsContainer(data-selectRps=`${selectReplies}` data-profid=profileUser._id)
+        //- (data-selectRps=`${selectReplies}`) NOT data-selectRps=selectReplies; data-profid=profileUser._id or `${profileUser._id}` strings both
+        //-(data-testuser=`${userLoggedInJs_profile}` data-profileusr=profileUser)
+        //- or userLoggedInJs_profile or userLoggedIn_profile ; NO `${userLoggedIn_profile}` NOR `${profileUser}`
 
         +createReplyModal(userLoggedIn_profile)
         +createDeletePostModal(userLoggedIn_profile)

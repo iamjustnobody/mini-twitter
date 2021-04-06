@@ -9,10 +9,14 @@ const userLoggedInJs=JSON.parse(document.querySelector(".testLoginUserPost").dat
 console.log("postPage.js - ",userLoggedInJs,userLoggedInJs._id,typeof userLoggedInJs,typeof userLoggedInJs._id,typeof userLoggedInJs.id)
 //obj string undefined //string undefined undefined if no JSON.parse
 */
-console.log("postID",postID,typeof postID) //script from postPage.pug
+console.log("postID",postID,typeof postID) //script from postPage.pug //string
 /*
 const postID=document.querySelector(".testLoginUserPost").dataset.postid
 console.log("postID",postID,typeof postID)
+*/
+/* //test data
+const testuser=JSON.parse(document.querySelector(".postsContainer").dataset.testuser)
+console.log("testuser postPage.js - ",testuser,typeof testuser,typeof testuser._id,typeof testuser.id)//obj string undefined
 */
 
 $(document).ready(()=>{

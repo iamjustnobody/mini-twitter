@@ -21,7 +21,18 @@ router.get('/',(req,res,next)=>{
 })*/ //ok but refactored by getPosts function so can be used for different endpoint api
 //f5 reflesh
 router.get('/',async (req,res,next)=>{  
-    var results=await getPosts({}); //need to await here as getPosts is async
+
+    var searchObj=req.query; //profilePage onloading posts for one single user
+    console.log('searchb4',searchObj)
+    if(searchObj.isReply!=undefined){
+        var isReply=searchObj.isReply=='true'
+        searchObj.commentedPost={$exists:isReply}
+        delete searchObj.isReply
+    }
+    console.log('searchAfter',searchObj)
+
+    var results=await getPosts(searchObj); //add searchObj for profilePage onloading posts just for thie partitular profileUser
+    //var results=await getPosts({}); //need to await here as getPosts is async
     res.status(200).send(results)
 }) //return results (or previously data) to frontend home.js getPosts for home page/pug
 /*
