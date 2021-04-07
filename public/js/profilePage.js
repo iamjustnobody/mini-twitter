@@ -26,13 +26,38 @@ console.log("testuser profilePage.js - ",testuser,typeof testuser,typeof testuse
 
 console.log("profile-id",profileID,typeof profileID) //string
 console.log("profile-select",selectRps,typeof selectRps) //string (or boolean)
-//const selectRps=document.querySelector(".postsContainer").dataset.selectrps
-//console.log("profile-id-selectrps",selectRps,typeof selectRps) //string
+/*
+const selectRps=document.querySelector(".postsContainer").dataset.selectrps
+console.log("profile-data-selectrps",selectRps,typeof selectRps) //string
+//if no json parse above here
 //data-selectRps=`${selectReplies}` undefined string true string; 
-//data-selectRps=selectReplies no data-selectrps or just data-selectRps in div //undefined undefined //string
+//data-selectRps=selectReplies no data-selectrps or just data-selectRps in div //undefined undefined //empty string
+//data-selectRps=`${JSON.stringify(selectReplies)}` then still no JsonParse -> "true" "undefined" or true str undefined str
+//data-selectRps=JSON.stringify(selectReplies) then still no jsonParse-> true str undefined undefined
 
-const profid=document.querySelector(".postsContainer").dataset.profid
+//data-selectRps=`${JSON.stringify(selectReplies)}` then JsonParse -> true boolean "true" & "undefined" error
+//data-selectRps=JSON.stringify(selectReplies) then JsonParse -> true boolean "true" & error
+*/
+/*
+const profid=JSON.parse(document.querySelector(".postsContainer").dataset.profid)
 console.log("profile-data-id",profid,typeof profid) //string
+const profUsr=JSON.parse(document.querySelector(".postsContainer").dataset.profusr)
+console.log("profile-data-profUsr",profUsr,typeof profUsr) 
+const usr=JSON.parse(document.querySelector(".postsContainer").dataset.usr)
+console.log("profile-data-usr",usr,typeof usr) 
+// no json parse 
+//data-profid=profileUser._id data-profUsr=profileUser or JSON.stringify (lefttwo) or `${JSON.stringify(lefttwo)}`
+//above one: all strings var xx="yy" or "{"xx":"yy",zz:["id1","id2"]}"
+//data-profid=`${profileUser._id}` data-profUsr=`${profileUser}`
+//all stirngs var xx="yyy" or xx="{xx:'yy',zz:[non-str-id1,non-str-id2],oo:non-str-id3}" @'/profile/xx' xx="[obj obj]" => [obj obj] str type@'/profile'
+//data-usr=userLoggedInJs_profile => string var "{"zz":"zz","aa":"aa"}" ; data-usr=`${userLoggedInJs_profile}` => string var xx="{"xx":"yy",zz:["id1","id2"]}"
+//data-usr=`${userLoggedIn_profile}` var xx="[obj obj]" => [obj obj] str type
+// data-usr=userLoggedIn_profile string var xx="{"xx":"yy",zz:["id1","id2"]}"
+//if Jsonparse
+//data-usr=`${userLoggedInJs_profile}` or data-usr=userLoggedInJs_profile or data-usr=userLoggedIn_profile all obj var xx="{"xx":"yy",zz:["id1","id2"]}" 
+//data-profid=JSON.stringify(profileUser._id) data-profUsr=JSON.stringify(profileUser) or `${JSON.stringify(profileUser._id)}` `${JSON.stringify(profileUser)}`
+//string obj string obj after parse
+*/
 
 
 $(document).ready(()=>{
@@ -45,6 +70,8 @@ function loadPosts(){
         //or for data-selectRps=`${selectReplies}`
         //isReply:selectRps==true explicitly for selectRps=!{selectReplies} or !{`${selectReplies}`} in profilePage.pug
         //above can be explicitly if set payload.selectReplies=false in profileRoutes.js router.get('/:username')
+        //isReply:selectRps=='' explicitey for data-selectRps=selectReplies
+        // isReply although boolean but presented as '' or 'true' or 'false' at backend posts.js
         //    console.log(getData) //populated data sent back by posts.js get '/' 
         outputPosts(getPosts,$('.postsContainer'))
         }) //F5 reflesh

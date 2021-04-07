@@ -4,8 +4,12 @@ extends layouts/main-layout
 block content
     script. 
         //-var userLoggedInJs_profile=!{userLoggedInJs_profile} //but use userLoggedInJs in common.js
-        var userLoggedInJs='!{`${userLoggedIn_profile}`}'
-        //-!{userLoggedInJs_profile} or !{`${userLoggedInJs_profile}`} 
+        var userLoggedInJs=!{userLoggedInJs_profile}
+        //-!{userLoggedInJs_profile} or !{`${userLoggedInJs_profile}`} //obj var xx={"xx":"xxx","yy":"yyy"} //!=># console err & xx={&}
+        //- !{userLoggedIn_profile} or !{`${userLoggedIn_profile}`} var xx=[obj obj] error in front console//same if !=>#
+        //- '!{userLoggedInJs_profile}' or '!{`${userLoggedInJs_profile}`}' bothplain specific strings var xx="{"xx":"xxx","yy":"yyy"}" 
+        //- !=>#:still plain strings & var xx="{&&;&}"
+        //-'!{`${userLoggedIn_profile}`}' [obj obj] stirng or '[obj obj]' //same for '!{userLoggedIn_profile}' //same if !=>#
     //-.testLoginUserProfile(data-currentUser=`${userLoggedInJs_profile}`)
         //-`${userLoggedInJs_profile}` or userLoggedInJs_profile or (userLoggedIn_profile or not)
     //-if testLoginUserProfile, push below inside testLoginUserProfile
@@ -13,19 +17,23 @@ block content
         span.errMsg User not found - check the URL you are trying to access
     else
         script. 
-            var profileID='!{`${profileUser._id}`}'
-            //-var profileID='!{profileUser._id}' ok too //or '!{`${selectedTab}`}'
+            var profileID='!{profileUser._id}'
+            //-var profileID='!{`${profileUser._id}`}' or '!{profileUser._id}' ok strings //or '!{`${selectedTab}`}' '!{selectedTab}'
+            //-profileID='#{`${profileUser._id}`}' OR profileID='#{profileUser._id}' //strings
+            //-above can be applied to '/profile' or '/profile/xx'; above replacing ._id with .id can be applied only to '/profile/xx';'/profile' w .id->empty str
+            //-removing quotes incur error for ._id (backend obj) & .id (backend string)
         script. 
             var selected='!{selectedTab}'
-            //-alert(selected)
+            //-alert(selected) //if no 'replies', "undefined" string for '!{`${selectedTab}`}'; "" empty string for '!{selectedTab}'
         script. 
             var selectRps='!{selectReplies}'
             //-alert(selectRps)
             //-alert(typeof selectRps) //string "" or "true"
             //-if false (as router.get('/:username') @profileRoutes.js not set selectReplies=false)& selectRps=!{selectReplies}, alert shows undefined n web shows all posts
-            //-selectRps=!{selectReplies} true boolean or undefined undefined shown in alert here & profilePage.js
-            //-!{`${selectReplies}`} same as above
+            //-selectRps=!{selectReplies} true boolean (undefined&undefined vs/or error) shown in alert here & profilePage.js //likewise #{selectReplies}
+            //-!{`${selectReplies}`} OR #{`${selectReplies}`} true boolean undefined undefined (var xx=undefined (while above or right var xx=))//#{selectReplies} or !{selectReplies} TRUE BOOLEAN OTHERWISE ERROR
             //- selectRps='!{`${selectReplies}`}' "true" string or undefined string @alert&profilePage.js; selectRps='!{selectReplies}' "true" string or empty stirng '' @alert&profilePage
+            //-selectRps='#{`${selectReplies}`}' OR selectRps='#{selectReplies}' SAME TYPE AS ABOVE
             //- if router.get('/:username') @profileRoutes.js set selectReplies=false, then above false (boolean) or "false" (str) -> same type as true "true"
         //-span #{profileUser.fName}
         .profileHeaderContainer
@@ -64,8 +72,9 @@ block content
             //- or +createTab("Posts",`/profile/${profileUser.username}`,selectedTab!="replies")
             //- or +createTab("Replies",`/profile/${profileUser.username}/replies`,selectedTab=="replies")
 
-        .postsContainer(data-selectRps=`${selectReplies}` data-profid=profileUser._id)
-        //- (data-selectRps=`${selectReplies}`) NOT data-selectRps=selectReplies; data-profid=profileUser._id or `${profileUser._id}` strings both
+        .postsContainer(data-selectRps=`${selectReplies}` data-profid=`${profileUser._id}` data-profUsr=JSON.stringify(profileUser) data-usr=userLoggedInJs_profile)
+        //- for testing (data-selectRps=JSON.stringify(selectReplies) data-profid=JSON.stringify(profileUser._id) data-profUsr=JSON.stringify(profileUser) data-usr=`${userLoggedInJs_profile}`)
+        //- (data-selectRps=`${selectReplies}`) better not data-selectRps=selectReplies; data-profid=profileUser._id or `${profileUser._id}` strings both
         //-(data-testuser=`${userLoggedInJs_profile}` data-profileusr=profileUser)
         //- or userLoggedInJs_profile or userLoggedIn_profile ; NO `${userLoggedIn_profile}` NOR `${profileUser}`
 

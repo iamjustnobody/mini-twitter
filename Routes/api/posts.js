@@ -24,9 +24,9 @@ router.get('/',async (req,res,next)=>{
 
     var searchObj=req.query; //profilePage onloading posts for one single user
     console.log('searchb4',searchObj)
-    if(searchObj.isReply!=undefined){
-        var isReply=searchObj.isReply=='true'
-        searchObj.commentedPost={$exists:isReply}
+    if(searchObj.isReply!=undefined){ //searchObj.isReply (boolean type) presented as '' 'true' 'false' in searchObj (obj type)
+        var isReply=searchObj.isReply=='true' //isReply is real boolean
+        searchObj.commentedPost={$exists:isReply} //isReply is real boolean
         delete searchObj.isReply
     }
     console.log('searchAfter',searchObj)
