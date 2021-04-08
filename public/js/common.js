@@ -155,7 +155,8 @@ $(document).on('click','.retweetButton',(event)=>{
     }) 
 
 })
-
+//delete retweetedPost -> retweetPost's content become undefined
+//delete retweetPost-> actually delete retweetedPost -> retweetPost's content become undefined
 
 $("#replyModal").on("show.bs.modal",(event)=>{
     var btn=$(event.relatedTarget); //event.target is modal; relatedTarget is btn//or ()=>{var btn=$(event.target)}
@@ -213,6 +214,45 @@ $(document).on('click','.post',(event)=>{
     //open retweetedPost; commentedPost if any +currentPost+comments if any
 })
 
+
+//profilePage.js
+$(document).on('click','.followButton',(event)=>{ //css class of followButton
+    var button=$(event.target);
+    var profileUserId=button.data().userid;
+    console.log("profileUserId",profileUserId,typeof profileUserId)
+
+    $.ajax({
+        url:`/api/users/${profileUserId}/follow`, //for userloggedin to either follow or unfollow the profileuser//profileuser to be followed or unfollowed
+            type:"PUT",
+            success:(updatedUserData,status,xhr)=>{ //updatedUser(loggedinUser that follows profileUser) from put('/:userid/follow') in userss.js
+                console.log(updatedUserData) //only has._id
+                console.log("id",updatedUserData.id,typeof updatedUserData.id,'_id',updatedUserData._id,typeof updatedUserData._id)
+                //undefined string no matter passed in is mongoDOc or req.session.user from '/api/users
+                if(xhr.status==404) return alert("user not found")
+
+                var diff=1;
+                if(updatedUserData.following && updatedUserData.following.includes(profileUserId)){
+                    button.addClass("following")
+                    button.text("Following")
+                }else{
+                    button.removeClass("following")
+                    button.text("Follow")
+                    diff=-1;
+                }
+                //profileUser's following & followers; only have profileUser's ID at the mo; not profileUser's obj
+                //ajax call findById checking profileUers' followers & following's lengths
+                //or simply just add/remove number (below) together with above button css class
+                var followersLabel=$("#followersValue") 
+                if(followersLabel.length!=0){ //if we are on profile page
+                    var followersText=followersLabel.text() //followersLabel.text("")
+                    //followersLabel.text(followersText+1); //.text() above => o1 011 //.text("") above => [obj obj] 1
+                    //followersLabel.text(followersText*1+1); //real number // ok //or below parseInt
+                    followersText=parseInt(followersText);
+                    followersLabel.text(followersText+diff); //followersLabel.text(followersText+1); 
+                }
+            }
+        })
+})
 
 function getPostIdFromElment(element){
     var isRoot=element.hasClass('post')

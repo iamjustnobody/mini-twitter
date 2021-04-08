@@ -46,6 +46,30 @@ console.log('get/one',typeof req.session.user,typeof `${req.session.user}`, type
 })
 
 
+//above profilePage.pug below following&Followers.pug
+router.get('/:username/following',middleware.requireLogin,async (req,res,next)=>{  //have middleware MW here or in app.js
+    var payload=await getPayload(req.params.username,req.session.user) 
+console.log('get/one',typeof req.session.user,typeof `${req.session.user}`, typeof req.params.username,typeof `${req.params.username}`)
+  //obj string string string
+  console.log(payload.profileUser.id,payload.profileUser._id,typeof payload.profileUser.id,typeof payload.profileUser._id) //string obj
+//stirng obj string obj as mongodb doc (obj) has both .id string & ._id obj
+    payload.selectedTab='following'
+    //payload.selectFollowers=false
+  res.status(200).render('followers&Following',payload) //webViews folder 'followers&Following.pug' for this GET /:userID or/:userid
+})
+router.get('/:username/followers',middleware.requireLogin,async (req,res,next)=>{  //have middleware MW here or in app.js
+    var payload=await getPayload(req.params.username,req.session.user) 
+console.log('get/one',typeof req.session.user,typeof `${req.session.user}`, typeof req.params.username,typeof `${req.params.username}`)
+  //obj string string string
+  console.log(payload.profileUser.id,payload.profileUser._id,typeof payload.profileUser.id,typeof payload.profileUser._id) //string obj
+//stirng obj string obj as mongodb doc (obj) has both .id string & ._id obj
+    payload.selectedTab='followers'
+    payload.selectFollowers=true
+  res.status(200).render('followers&Following',payload) //webViews folder 'followers&Following.pug' for this GET /:userID or/:userid
+})
+
+
+
 async function getPayload(username,userLoggedIn_profile){
     console.log("getOne userloggedin",typeof username,typeof userLoggedIn_profile) //username passedin always string //`${req.session.user}` string req.session.user obj
     var user=await User.findOne({username:`${username}`}) //{username} or {username:`${username}`} or {username:username}

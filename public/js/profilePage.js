@@ -38,8 +38,8 @@ console.log("profile-data-selectrps",selectRps,typeof selectRps) //string
 //data-selectRps=`${JSON.stringify(selectReplies)}` then JsonParse -> true boolean "true" & "undefined" error
 //data-selectRps=JSON.stringify(selectReplies) then JsonParse -> true boolean "true" & error
 */
-/*
-const profid=JSON.parse(document.querySelector(".postsContainer").dataset.profid)
+
+const profid=document.querySelector(".postsContainer").dataset.profid
 console.log("profile-data-id",profid,typeof profid) //string
 const profUsr=JSON.parse(document.querySelector(".postsContainer").dataset.profusr)
 console.log("profile-data-profUsr",profUsr,typeof profUsr) 
@@ -49,7 +49,7 @@ console.log("profile-data-usr",usr,typeof usr)
 //data-profid=profileUser._id data-profUsr=profileUser or JSON.stringify (lefttwo) or `${JSON.stringify(lefttwo)}`
 //above one: all strings var xx="yy" or "{"xx":"yy",zz:["id1","id2"]}"
 //data-profid=`${profileUser._id}` data-profUsr=`${profileUser}`
-//all stirngs var xx="yyy" or xx="{xx:'yy',zz:[non-str-id1,non-str-id2],oo:non-str-id3}" @'/profile/xx' xx="[obj obj]" => [obj obj] str type@'/profile'
+//all stirngs var xx="yyy" or xx="{xx:'yy',zz:[non-str-id1,non-str-id2],oo:non-str-id3}" @'/profile/xx' (mongoDoc); xx="[obj obj]" => [obj obj] str type@'/profile' (req.session)
 //data-usr=userLoggedInJs_profile => string var "{"zz":"zz","aa":"aa"}" ; data-usr=`${userLoggedInJs_profile}` => string var xx="{"xx":"yy",zz:["id1","id2"]}"
 //data-usr=`${userLoggedIn_profile}` var xx="[obj obj]" => [obj obj] str type
 // data-usr=userLoggedIn_profile string var xx="{"xx":"yy",zz:["id1","id2"]}"
@@ -57,7 +57,9 @@ console.log("profile-data-usr",usr,typeof usr)
 //data-usr=`${userLoggedInJs_profile}` or data-usr=userLoggedInJs_profile or data-usr=userLoggedIn_profile all obj var xx="{"xx":"yy",zz:["id1","id2"]}" 
 //data-profid=JSON.stringify(profileUser._id) data-profUsr=JSON.stringify(profileUser) or `${JSON.stringify(profileUser._id)}` `${JSON.stringify(profileUser)}`
 //string obj string obj after parse
-*/
+//data-profUsr=profileUser obj after parse //data-profUsr=`${profileUser}` error after parse
+//data-profid=profileUser._id or `${profileUser._id}` cannot be parsed without being JSONstringified first
+
 
 
 $(document).ready(()=>{

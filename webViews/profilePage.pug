@@ -2,6 +2,53 @@ extends layouts/main-layout
 //- similar to home.pug or postPage here
 
 block content
+    //-p
+        p #{userLoggedInJs_profile} #{typeof userLoggedInJs_profile} #{`${userLoggedInJs_profile}`} #{typeof `${userLoggedInJs_profile}`}
+        p #{userLoggedIn_profile} #{typeof userLoggedIn_profile} #{`${userLoggedIn_profile}`} #{typeof `${userLoggedIn_profile}`}
+        p #{profileUser} #{typeof profileUser} #{`${profileUser}`} #{typeof `${profileUser}`}
+        //-userLoggedInJs_profile {"x":"y","a":["b","c"]} stirng ; userLoggedInJs_profile:[object Object] obj then string
+        //-profileUser: {x:'y',a:[b,c],a:b (date or _id)} stirng
+        p #{userLoggedInJs_profile._id} #{typeof userLoggedInJs_profile._id} #{`${userLoggedInJs_profile._id}`} #{typeof `${userLoggedInJs_profile._id}`}
+        //- undefined undefined emptyString
+        p #{userLoggedIn_profile._id} #{typeof userLoggedIn_profile._id} #{`${userLoggedIn_profile._id}`} #{typeof `${userLoggedIn_profile._id}`}
+        //-xx string xx stirng
+        p #{profileUser._id} #{typeof profileUser._id} #{`${profileUser._id}`} #{typeof `${profileUser._id}`}
+        //- xx obj xx string
+        p #{selectReplies} #{typeof selectReplies} #{`${selectReplies}`} #{typeof `${selectReplies}`}
+        //-undefined undefined emptyStirng
+        p #{profileUser.id} #{typeof profileUser.id} #{`${profileUser.id}`} #{typeof `${profileUser.id}`}
+        //-xx string xx string
+    //-p
+        p #{JSON.stringify(userLoggedInJs_profile)} #{typeof JSON.stringify(userLoggedInJs_profile)} #{`${JSON.stringify(userLoggedInJs_profile)}`} #{typeof `${JSON.stringify(userLoggedInJs_profile)}`}
+        //-"{\"x\":\"y\",\"a\":[\"b\",\"c\"]}" stirng
+        p #{JSON.stringify(userLoggedIn_profile)} #{typeof JSON.stringify(userLoggedIn_profile)} #{`${JSON.stringify(userLoggedIn_profile)}`} #{typeof `${JSON.stringify(userLoggedIn_profile)}`}
+        p #{JSON.stringify(profileUser)} #{typeof JSON.stringify(profileUser)} #{`${JSON.stringify(profileUser)}`} #{typeof `${JSON.stringify(profileUser)}`}
+        //-{"x":"y","a":["b","c"]} stirng
+        p #{JSON.stringify(userLoggedInJs_profile._id)} #{typeof JSON.stringify(userLoggedInJs_profile._id)} #{`${JSON.stringify(userLoggedInJs_profile._id)}`} #{typeof `${JSON.stringify(userLoggedInJs_profile._id)}`}
+        //- undefined undefined empty string
+        p #{JSON.stringify(userLoggedIn_profile._id)} #{typeof JSON.stringify(userLoggedIn_profile._id)} #{`${JSON.stringify(userLoggedIn_profile._id)}`} #{typeof `${JSON.stringify(userLoggedIn_profile._id)}`}
+        p #{JSON.stringify(profileUser._id)} #{typeof JSON.stringify(profileUser._id)} #{`${JSON.stringify(profileUser._id)}`} #{typeof `${JSON.stringify(profileUser._id)}`}
+        //- "xx" stirng "xx" stirng
+        p #{JSON.stringify(selectReplies)} #{typeof JSON.stringify(selectReplies)} #{`${JSON.stringify(selectReplies)}`} #{typeof `${JSON.stringify(selectReplies)}`}
+        //- undefined undefined empty string
+        p #{JSON.stringify(profileUser.id)} #{typeof JSON.stringify(profileUser.id)} #{`${JSON.stringify(profileUser.id)}`} #{typeof `${JSON.stringify(profileUser.id)}`}
+        //- "xx" stirng "xx" stirng
+    //-p
+        p #{JSON.parse(JSON.stringify(userLoggedInJs_profile))} #{typeof JSON.parse(JSON.stringify(userLoggedInJs_profile))} #{`${JSON.parse(JSON.stringify(userLoggedInJs_profile))}`} #{typeof `${JSON.parse(JSON.stringify(userLoggedInJs_profile))}`}
+        //-//-{"x":"y","a":["b","c"]} stirng
+        p #{JSON.parse(JSON.stringify(userLoggedIn_profile))} #{typeof JSON.parse(JSON.stringify(userLoggedIn_profile))} #{`${JSON.parse(JSON.stringify(userLoggedIn_profile))}`} #{typeof `${JSON.parse(JSON.stringify(userLoggedIn_profile))}`}
+        p #{JSON.parse(JSON.stringify(profileUser))} #{typeof JSON.parse(JSON.stringify(profileUser))} #{`${JSON.parse(JSON.stringify(profileUser))}`} #{typeof `${JSON.parse(JSON.stringify(profileUser))}`}
+        //-[object Object] object [object Object] string
+        //-p #{JSON.parse(JSON.stringify(userLoggedInJs_profile._id))} #{typeof JSON.parse(JSON.stringify(userLoggedInJs_profile._id))} #{`${JSON.parse(JSON.stringify(userLoggedInJs_profile._id))}`} #{typeof `${JSON.parse(JSON.stringify(userLoggedInJs_profile._id))}`}
+        //- 
+        p #{JSON.parse(JSON.stringify(userLoggedIn_profile._id))} #{typeof JSON.parse(JSON.stringify(userLoggedIn_profile._id))} #{`${JSON.parse(JSON.stringify(userLoggedIn_profile._id))}`} #{typeof `${JSON.parse(JSON.stringify(userLoggedIn_profile._id))}`}
+        p #{JSON.parse(JSON.stringify(profileUser._id))} #{typeof JSON.parse(JSON.stringify(profileUser._id))} #{`${JSON.parse(JSON.stringify(profileUser._id))}`} #{typeof `${JSON.parse(JSON.stringify(profileUser._id))}`}
+        //- xx stirng xx stirng
+        //-p #{JSON.parse(JSON.stringify(selectReplies))} #{typeof JSON.parse(JSON.stringify(selectReplies))} #{`${JSON.parse(JSON.stringify(selectReplies))}`} #{typeof `${JSON.parse(JSON.stringify(selectReplies))}`}
+        //- 
+        p #{JSON.parse(JSON.stringify(profileUser.id))} #{typeof JSON.parse(JSON.stringify(profileUser.id))} #{`${JSON.parse(JSON.stringify(profileUser.id))}`} #{typeof `${JSON.parse(JSON.stringify(profileUser.id))}`}
+        //- xx stirng xx stirng
+
     script. 
         //-var userLoggedInJs_profile=!{userLoggedInJs_profile} //but use userLoggedInJs in common.js
         var userLoggedInJs=!{userLoggedInJs_profile}
@@ -36,6 +83,11 @@ block content
             //-selectRps='#{`${selectReplies}`}' OR selectRps='#{selectReplies}' SAME TYPE AS ABOVE
             //- if router.get('/:username') @profileRoutes.js set selectReplies=false, then above false (boolean) or "false" (str) -> same type as true "true"
         //-span #{profileUser.fName}
+        //-.profileHeaderContainer
+
+        - followersCount=profileUser.followers.length 
+        - followingCount=profileUser.following.length 
+            //-left-hand-side still used in pug here (not in scriptsJS); left+right used in pug by using #{} or =`${}`
         .profileHeaderContainer
             .coverPhotoContainer 
 
@@ -45,9 +97,23 @@ block content
             
             .profileButtonsContainer
                 if profileUser._id!=userLoggedIn_profile._id 
+                    //- this is pug if statement
                     a.profileButton(href=`/messages/${profileUser._id}`)
                         i.fas.fa-envelope
-                    +createFollowButton(profileUser,true)
+                    
+                    //- if(userLoggedIn_profile.following && userLoggedIn_profile.following.includes(profileUser._id)) //could do
+                    - var profileUsrid=profileUser._id.toString()
+                    - if(userLoggedIn_profile.following && userLoggedIn_profile.following.includes(profileUsrid))
+                        //- .includes in js (js in pug) not pug lang so add '-' b4 if and add parentheses after if; this is js if Not pug if
+                        //- but still use pug variables directly from payload profileRoutes.js NOt scripts var from pug here to JS profilePage.js
+                        //- could use pug val profileUser._id (obj type) inside .includes (auto cast); or use - var profileUsrid
+                        //- profileUsrid (js in pug -), profileUser._id userLoggedIn_profile.following (non-api-routes payload) etc used in pug here using #{} or =`${}`
+                        //-p #{profileUser._id} #{typeof profileUser._id} #{profileID} #{typeof profileID} //xx obj //undefined
+                        +createFollowButton(profileUser,true)
+                    - else 
+                        //- this is js else; not pug else
+                        //-p #{profileUser._id} #{typeof profileUser._id} #{profileID} #{typeof profileID} //xx obj //undefined
+                        +createFollowButton(profileUser,false)
 
             .userDetailsContainer
                 span.displayName=`${profileUser.fName} ${profileUser.lName}`
@@ -58,10 +124,10 @@ block content
 
                 .followersContainer 
                     a(href=`/profile/${profileUser.username}/following`)
-                        span.value #{0}
+                        span.value #{followingCount}
                         span Following
                     a(href=`/profile/${profileUser.username}/followers`)
-                        span.value=`${0}`
+                        span#followersValue=`${followersCount}`
                         span Followers
         
         .tabsContainer

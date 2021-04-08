@@ -48,6 +48,7 @@ const profileRoute=require('./Routes/profileRoutes');
 //api routes
 const postsApiRoute=require('./Routes/api/posts');
 const { type } = require('os');
+const usersApiRoute=require('./Routes/api/users');
 
 
 //app.use(middleware.requireLogin);
@@ -62,6 +63,7 @@ app.use("/profile",middleware.requireLogin,profileRoute)
 
 
 app.use("/api/posts",postsApiRoute)
+app.use("/api/users",usersApiRoute)
 
 
 

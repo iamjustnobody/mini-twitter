@@ -187,17 +187,17 @@ console.log('afterLike',req.session.user.id,typeof req.session.user.id,req.sessi
 })
 
 router.post('/:postid/retweet',async(req,res,next)=>{ 
-    const id=`${req.params.postid}`; //or id=req.params.postid both ok
-    const userId=`${req.session.user._id}`; //or userId=req.session.user._id both ok
+    const id=req.params.postid; //or id=`${req.params.postid}` both ok
+    const userId=req.session.user._id; //or userId=`${req.session.user._id}` both ok
     console.log(id,userId)
     
-   const untweetPost=await Post.findOneAndDelete({postedBy:`${userId}`,retweetData:`${id}`}) //or {postedBy:`${userId}`,retweetData:`${id}`} both ok
+   const untweetPost=await Post.findOneAndDelete({postedBy:userId,retweetData:id}) //or {postedBy:`${userId}`,retweetData:`${id}`} both ok
    .catch(error=>{console.log(error);res.sendStatus(400);});
    //return the post thats untweeted
  //  console.log('untweetPost',untweetPost)
    let retweetPost;
    if(untweetPost==null){
-     retweetPost=await Post.create({postedBy:`${userId}`,retweetData:`${id}`}) //or {postedBy:userId,retweetData:id} both ok
+     retweetPost=await Post.create({postedBy:userId,retweetData:id}) //or {postedBy:`${userId}`,retweetData:`${id}`} both ok
      .catch(error=>{console.log(error);res.sendStatus(400);});
    }
 //   console.log('retweetPost',retweetPost)
@@ -208,15 +208,15 @@ router.post('/:postid/retweet',async(req,res,next)=>{
   console.log("id",id,typeof id,(`${id}`),typeof (`${id}`)) //string string
   console.log("userId",userId,typeof userId,(`${userId}`),typeof (`${userId}`)) //string string
 */
- req.session.user=await User.findByIdAndUpdate(`${userId}`,{[option]:{retweets:`${post._id}`}},{new:true}) //not retweets:retweetPost._id as retweetPost could be null
+ req.session.user=await User.findByIdAndUpdate(userId,{[option]:{retweets:post._id}},{new:true}) //not retweets:retweetPost._id as retweetPost could be null
  .catch(error=>{console.log(error);res.sendStatus(400);}) //add retweetPost's id itself to user db
- //or findByIdAndUpdate(userId,{[option]:{retweets:post._id}},{new:true}) //both ok
+ //or findByIdAndUpdate(`${userId}`,{[option]:{retweets:`${post._id}`}},{new:true}) //both ok
  console.log('afterRetweet',req.session.user.id,typeof req.session.user.id,req.session.user._id,typeof req.session.user._id)
 //string obj
-const updatedPost=await Post.findByIdAndUpdate(`${id}`,{[option]:{retweetUsers:`${userId}`}},{new:true})
+const updatedPost=await Post.findByIdAndUpdate(id,{[option]:{retweetUsers:userId}},{new:true})
 .catch(error=>{console.log(error);res.sendStatus(400);})
 //return retweeted Post =findbid(id) - which is updatedPost (not retweetPost as its separate new child post)
-  //or findByIdAndUpdate(id,{[option]:{retweetUsers:userId}},{new:true}) //both ok
+  //or findByIdAndUpdate(`${id}`,{[option]:{retweetUsers:`${userId}`}},{new:true}) //both ok
 console.log('afterRetweet',updatedPost.id,typeof updatedPost.id,updatedPost._id,typeof updatedPost._id)
 //string obj
 

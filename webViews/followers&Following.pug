@@ -1,0 +1,26 @@
+extends layouts/main-layout
+//- similar to profilePage.pug here
+
+block content
+    if !profileUser
+        span.errMsg User not found - check the URL you are trying to access
+    else
+        script. 
+            var profileID='!{profileUser._id}'
+        script. 
+            var selected='!{selectedTab}'
+        script. 
+            var selectFlws='!{selectFollowers}'
+        
+        .tabsContainer
+            +createTab("Following",`/profile/${profileUser.username}/following`,!selectFollowers)
+            //- selectFollowers!=true
+            +createTab("Followers",`/profile/${profileUser.username}/followers`,selectFollowers)
+            //-selectFollowers==true //selectFollowers is boolean type
+            //- or +createTab("Following",`/profile/${profileUser.username}/following`,selectedTab!="followers")
+            //- or +createTab("Followers",`/profile/${profileUser.username}/followers`,selectedTab=="followers")
+        
+        .resultsContainer 
+
+block scripts 
+    script(src="/js/followers&Following.js")
