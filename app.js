@@ -26,7 +26,8 @@ app.use(express.static(path.join(__dirname,'public')));
 
 const bodyParser=require('body-parser');
 //app.use(bodyParser.urlencoded({extended:false})) //opt
-app.use(express.urlencoded({extended:false})); //for submitting the form action method
+//app.use(express.urlencoded({extended:false})); //for submitting the form action method 
+//could be placed in here or in loginRoutes & registerRoutes
 
 
 const session=require('express-session')
@@ -45,6 +46,8 @@ const registerRoute=require('./Routes/registerRoutes');
 const logoutRoute=require('./Routes/logoutRoutes');
 const postRoute=require('./Routes/postRoutes');
 const profileRoute=require('./Routes/profileRoutes');
+const uploadRoute=require('./Routes/uploadRoutes');
+
 //api routes
 const postsApiRoute=require('./Routes/api/posts');
 const { type } = require('os');
@@ -60,6 +63,7 @@ app.use("/register",registerRoute)
 app.use("/logout",logoutRoute)
 app.use("/post",postRoute)
 app.use("/profile",middleware.requireLogin,profileRoute)
+app.use("/uploads",uploadRoute)
 
 
 app.use("/api/posts",postsApiRoute)

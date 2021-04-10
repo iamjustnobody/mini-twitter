@@ -6,6 +6,9 @@ block content
         span.errMsg User not found - check the URL you are trying to access
     else
         script. 
+            //-var userLoggedInJs_profile=!{userLoggedInJs_profile} //but use userLoggedInJs in common.js
+            var userLoggedInJs=!{userLoggedInJs_profile}
+        script. 
             var profileID='!{profileUser._id}'
         script. 
             var selected='!{selectedTab}'

@@ -5,6 +5,8 @@ const bcrypt=require('bcrypt')
 
 //app.set("view engine",'pug'); app.set("views",`${__dirname}/webViews`) //opt //  "./webViews" , "webViews"
 //app.use parser opt
+//router.use(bodyParser.urlencoded({extended:false})) //opt
+router.use(express.urlencoded({extended:false}))
 
 router.get('/',(req,res,next)=>{  
     var payload={

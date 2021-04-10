@@ -254,6 +254,126 @@ $(document).on('click','.followButton',(event)=>{ //css class of followButton
         })
 })
 
+
+
+
+//upload user profile photo/pic /user images
+var cropper
+/*
+$("#filePhoto").change((event)=>{
+    //var input=$(event.target)
+    //console.log(input[0]) //<input id="filePhoto" type="file" name="filePhoto">
+    //console.log(input)
+
+    var input=$(event.target)[0]
+    console.log(input) ////<input id="filePhoto" type="file" name="filePhoto">
+
+    console.log(this.files) //undefined
+
+    if(input.files && input.files[0]){
+        var reader=new FileReader();
+        reader.onload=()=>{
+            console.log('loaded')
+        }
+        reader.readAsDataURL(input.files[0])
+    }
+}) */
+$("#filePhoto").change(function(){
+
+    if(this.files && this.files[0]){
+
+        console.log(this.files,typeof this.files,this.files.length) //FileList containing all Files; arrayObj
+        var reader=new FileReader();
+        reader.onload=(e)=>{
+            
+            var image=document.getElementById("imagePreview")
+            image.src=e.target.result
+            //$('#imagePreview').attr("src",e.target.result) //ok
+            console.log('imageFile loaded')
+            if(cropper!==undefined) cropper.destroy()
+            cropper=new Cropper(image,{
+                aspectRatio:1/1, //square
+                background:false //no grid bg
+            })
+        }
+        reader.readAsDataURL(this.files[0])
+    }
+})
+$('#imageUploadButton').click(()=>{
+    var canvas=cropper.getCroppedCanvas(); //select the area chosen
+    if(canvas==null) {
+        alert('Could not upload image. Make sure it is an image file.');
+        return
+    }
+//convert canvas to blob binary large obj; store image & video & transfer between 
+    canvas.toBlob((blob)=>{ //done converting into blob then call cb (pass in the results blob)
+        var formData=new FormData()
+        formData.append('croppedImage',blob) //keyval
+        console.log(formData)
+        //fire ajax call
+        $.ajax({
+            url:"/api/users/profilePicture",
+            type:"POST",
+            data: formData,
+            processData:false, //form Jquery NOT to convert formData to string
+            contentType:false, //forms subbmitting files //need boundary/delimiter (separating data sent to server) in the request
+            success: (data,status,xhr)=>location.reload()
+
+        }) //need new POST url MW in apiRoutes users.js (inside having PUT/PATCH to mongoDB) 
+        //POST imgFile to fs; PUT/PATCH img/profilePic to mongoDB
+        //& also new non-api-routes (GET)
+
+    })
+    
+})
+
+$("#coverPhoto").change(function(){
+
+    if(this.files && this.files[0]){
+
+        console.log(this.files,typeof this.files,this.files.length) //FileList containing all Files; arrayObj
+        var reader=new FileReader();
+        reader.onload=(e)=>{
+            
+            var image=document.getElementById("coverPhotoPreview")
+            image.src=e.target.result
+            //$('#imagePreview').attr("src",e.target.result) //ok
+            console.log('coverPhoto loaded')
+            if(cropper!==undefined) cropper.destroy()
+            cropper=new Cropper(image,{
+                aspectRatio:16/9, //square
+                background:false //no grid bg
+            })
+        }
+        reader.readAsDataURL(this.files[0])
+    }
+})
+$('#coverPhotoUploadButton').click(()=>{
+    var canvas=cropper.getCroppedCanvas(); //select the area chosen
+    if(canvas==null) {
+        alert('Could not upload image. Make sure it is an image file.');
+        return
+    }
+//convert canvas to blob binary large obj; store image & video & transfer between 
+    canvas.toBlob((blob)=>{ //done converting into blob then call cb (pass in the results blob)
+        var formData=new FormData()
+        formData.append('croppedCoverPhoto',blob) //keyval
+        console.log(formData)
+        //fire ajax call
+        $.ajax({
+            url:"/api/users/coverPhoto",
+            type:"POST",
+            data: formData,
+            processData:false, //form Jquery NOT to convert formData to string
+            contentType:false, //forms subbmitting files //need boundary/delimiter (separating data sent to server) in the request
+            success: (data,status,xhr)=>location.reload()
+
+        }) 
+
+    })
+    
+})
+
 function getPostIdFromElment(element){
     var isRoot=element.hasClass('post')
     var rootElment= isRoot===true? element: element.closest(".post");

@@ -36,7 +36,7 @@ console.log('get/one',typeof req.session.user,typeof `${req.session.user}`, type
 router.get('/:username/replies',middleware.requireLogin,async (req,res,next)=>{  //have middleware MW here or in app.js
     var payload=await getPayload(`${req.params.username}`,req.session.user)
 //var payload=await getPayload(req.params.username,req.session.user) //ok
-console.log('get/one',typeof req.session.user,typeof `${req.session.user}`, typeof req.params.username,typeof `${req.params.username}`)
+console.log('get/one/Rs',typeof req.session.user,typeof `${req.session.user}`, typeof req.params.username,typeof `${req.params.username}`)
   //obj string string string
   console.log(payload.profileUser.id,payload.profileUser._id,typeof payload.profileUser.id,typeof payload.profileUser._id) //string obj
 //stirng obj string obj as mongodb doc (obj) has both .id string & ._id obj
@@ -49,7 +49,7 @@ console.log('get/one',typeof req.session.user,typeof `${req.session.user}`, type
 //above profilePage.pug below following&Followers.pug
 router.get('/:username/following',middleware.requireLogin,async (req,res,next)=>{  //have middleware MW here or in app.js
     var payload=await getPayload(req.params.username,req.session.user) 
-console.log('get/one',typeof req.session.user,typeof `${req.session.user}`, typeof req.params.username,typeof `${req.params.username}`)
+console.log('get/following',typeof req.session.user,typeof `${req.session.user}`, typeof req.params.username,typeof `${req.params.username}`)
   //obj string string string
   console.log(payload.profileUser.id,payload.profileUser._id,typeof payload.profileUser.id,typeof payload.profileUser._id) //string obj
 //stirng obj string obj as mongodb doc (obj) has both .id string & ._id obj
@@ -59,7 +59,7 @@ console.log('get/one',typeof req.session.user,typeof `${req.session.user}`, type
 })
 router.get('/:username/followers',middleware.requireLogin,async (req,res,next)=>{  //have middleware MW here or in app.js
     var payload=await getPayload(req.params.username,req.session.user) 
-console.log('get/one',typeof req.session.user,typeof `${req.session.user}`, typeof req.params.username,typeof `${req.params.username}`)
+console.log('get/followers',typeof req.session.user,typeof `${req.session.user}`, typeof req.params.username,typeof `${req.params.username}`)
   //obj string string string
   console.log(payload.profileUser.id,payload.profileUser._id,typeof payload.profileUser.id,typeof payload.profileUser._id) //string obj
 //stirng obj string obj as mongodb doc (obj) has both .id string & ._id obj
@@ -71,7 +71,7 @@ console.log('get/one',typeof req.session.user,typeof `${req.session.user}`, type
 
 
 async function getPayload(username,userLoggedIn_profile){
-    console.log("getOne userloggedin",typeof username,typeof userLoggedIn_profile) //username passedin always string //`${req.session.user}` string req.session.user obj
+    console.log("getPayload userloggedin",typeof username,typeof userLoggedIn_profile) //username passedin always string //`${req.session.user}` string req.session.user obj
     var user=await User.findOne({username:`${username}`}) //{username} or {username:`${username}`} or {username:username}
     if(user==null){
         user=await User.findById(username) //or findById(`${username}`)
@@ -83,7 +83,7 @@ async function getPayload(username,userLoggedIn_profile){
             }
         }
     }
-    console.log("profileUser getOne",typeof user) //obj
+    console.log("profileUser getPayload",typeof user) //obj
     
     return {
         pageTitle:`${user.username}`, //`${user.username}` or user.username

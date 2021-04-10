@@ -71,7 +71,7 @@ function loadPosts(){
         //above two for selectRps='!{selectReplies}' or selectRps='!{`${selectReplies}`}' in profilePage.pug
         //or for data-selectRps=`${selectReplies}`
         //isReply:selectRps==true explicitly for selectRps=!{selectReplies} or !{`${selectReplies}`} in profilePage.pug
-        //above can be explicitly if set payload.selectReplies=false in profileRoutes.js router.get('/:username')
+        //above can be implicitly if set payload.selectReplies=false in profileRoutes.js router.get('/:username')
         //isReply:selectRps=='' explicitey for data-selectRps=selectReplies
         // isReply although boolean but presented as '' or 'true' or 'false' at backend posts.js
         //    console.log(getData) //populated data sent back by posts.js get '/' 

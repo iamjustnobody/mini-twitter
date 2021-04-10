@@ -8,6 +8,10 @@ html(lang="en")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         title #{pageTitle}
 
+        link(rel='stylesheet',href='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-alpha.1/cropper.min.css')
+        //-does not matter the order of cropper css & bootstrap css
+        //-or put just on profilePage // but if tweet with image then needs to be here @main-layouts
+
         link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous')
         link(rel="stylesheet", href="/css/main.css") 
 
@@ -65,6 +69,10 @@ html(lang="en")
         script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js' integrity='sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM' crossorigin='anonymous')
         //-script(src='https://code.jquery.com/jquery-3.6.0.min.js' integrity='sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=' crossorigin='anonymous')
             //-foundation scripts as scripts below may use these above //need to in above order to make Modal pop up
+
+        //-jquery above cropperJs
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-alpha.1/cropper.min.js")
+        //-or put just on profilePage // but if tweet with image then needs to be here @main-layouts
 
         block scripts 
         //-ok

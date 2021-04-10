@@ -20,6 +20,7 @@ console.log("home.js - ",userLoggedInJs,userLoggedInJs._id,typeof userLoggedInJs
 //obj string undefined //string undefined undefined if no JSON.parse
 */
 
+/*
 $(document).ready(()=>{
     $.get('/api/posts',(getPosts)=>{ 
         //getTours getATour is directly doing from viewsRoutes & viewsController (frontend '/' & viewscontroller Tour.find directly called - not call ajax like we are doing here) with toursoverview & tourdetails pugs
@@ -27,7 +28,15 @@ $(document).ready(()=>{
         //getPosts=previously return data from posts.js now return results
             outputPosts(getPosts,$('.postsContainer'))
         }) //F5 reflesh
+}) */
+//updated to only show the posts from people your following -> below & api routes posts.js
+$(document).ready(()=>{
+    $.get('/api/posts',{followingOnly:'true'},(getPosts)=>{ //{followingOnly:'true'} or {followingOnly:true}
+            outputPosts(getPosts,$('.postsContainer'))
+        }) 
 })
+
+
 
 /*
 function outputPosts(getData,container){

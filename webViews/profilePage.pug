@@ -89,12 +89,27 @@ block content
         - followingCount=profileUser.following.length 
             //-left-hand-side still used in pug here (not in scriptsJS); left+right used in pug by using #{} or =`${}`
         .profileHeaderContainer
-            .coverPhotoContainer 
+            .coverPhotoSection 
+
+                .coverPhotoContainer
+                    //-add upload btn to the cover photo section //no default pic as profilePic; just blue bg
+                    if profileUser.coverPhoto!==undefined 
+                        img(src=profileUser.coverPhoto,alt="User's cover photo")
+                        
+                    if profileUser._id==userLoggedIn_profile._id 
+                            button.coverPhotoButton(data-toggle='modal',data-target="#coverPhotoUploadModal")
+                                i.fas.fa-camera
+                
 
                 .userImageContainer 
                     img(src=`${profileUser.profilePic}`,alt="User profile image")
-                        //- or src=profileUser.profilePic
-            
+                        //- or src=profileUser.profilePic //default pic
+
+                    //-add upload profile photo images functiona
+                    if profileUser._id==userLoggedIn_profile._id 
+                        button.profilePictureButton(data-toggle='modal',data-target="#imageUploadModal")
+                            i.fas.fa-camera
+
             .profileButtonsContainer
                 if profileUser._id!=userLoggedIn_profile._id 
                     //- this is pug if statement
@@ -127,7 +142,7 @@ block content
                         span.value #{followingCount}
                         span Following
                     a(href=`/profile/${profileUser.username}/followers`)
-                        span#followersValue=`${followersCount}`
+                        span#followersValue.value=`${followersCount}`
                         span Followers
         
         .tabsContainer
@@ -146,6 +161,11 @@ block content
 
         +createReplyModal(userLoggedIn_profile)
         +createDeletePostModal(userLoggedIn_profile)
+        
+        //-uploda profileimage
+        +createImageUploadModal(userLoggedIn_profile)
+
+        +createCoverPhotoUploadModal(userLoggedIn_profile)
 
 block scripts 
     script(src='/js/profilePage.js')

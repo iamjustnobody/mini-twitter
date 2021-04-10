@@ -4,8 +4,8 @@ const router=express.Router();
 const bodyParser=require('body-parser');
 
 //app.set("view engine",'pug'); app.set("views",`${__dirname}/webViews`) //opt //  "./webViews" , "webViews"
-//app.use(bodyParser.urlencoded({extended:false}))//opt*2
-//app.use(express.urlencoded({extended:false}));//opt
+router.use(bodyParser.urlencoded({extended:false}))//opt*2
+//router.use(express.urlencoded({extended:false}));//opt
 
 const User=require('../ModelSchema/UserSchema')
 const bcrypt=require('bcrypt')

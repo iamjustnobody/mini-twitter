@@ -31,6 +31,42 @@ router.get('/',async (req,res,next)=>{
     }
     console.log('searchAfter',searchObj)
 
+    //home.js: home page n=only shows the posts from people we are following
+    if(searchObj.followingOnly!=undefined){
+        //current user's following incl searchObj.postedBy
+        //if(searchObj.followingOnly) 
+        // {followingOnly:'true'} or {followingOnly:true} {followingOnly:'false'} or {followingOnly:false} @frontend home.js
+        //ABOVE here shows partial & search {following: 'xx'}; 
+        //if(searchObj.followingOnly==true) 
+        //{followingOnly:'true'} or {followingOnly:true} {followingOnly:'false'} or {followingOnly:false} @frontend home.js
+        //ABOVE here shows all & search {following: 'xx'}
+        //if(searchObj.followingOnly=='true')
+        //{followingOnly:'true'} or {followingOnly:true}@home.js shows partial here & search {following: 'xx'}
+        //{followingOnly:'false'} or {followingOnly:false} @frontend home.js shwos all here &search {following: 'xx'}
+
+        //REMOVE FOLLOWINGONLY OPTION FIELD -> shows all & searchObj empty obj {}
+
+        if(searchObj.followingOnly=='true'){ //NOT ==true or empty (no equal/comparison)
+            //var followingIds=req.session.user.following;
+            //followingIds.push(req.session.user._id) 
+            //keep adding req.session.user._id to req.session.user.following array every time reflesh the home page
+            var followingIds=[]; //so every time empty the array first
+            if(!req.session.user.following){ //this property does not exist; user may not have such following array
+                req.session.user.following=[]
+            }
+            req.session.user.following.forEach(user=>{
+                followingIds.push(user)
+            })
+            followingIds.push(req.session.user._id) 
+
+            searchObj.postedBy={$in:followingIds}
+        }
+        delete searchObj.followingOnly
+    }
+
+
+
+
     var results=await getPosts(searchObj); //add searchObj for profilePage onloading posts just for thie partitular profileUser
     //var results=await getPosts({}); //need to await here as getPosts is async
     res.status(200).send(results)

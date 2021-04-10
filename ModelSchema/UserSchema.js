@@ -8,7 +8,10 @@ const UserSchema=new Schema({
     username:{ type:String, required:[true,"username is required"],trim:true,unique:true},
     email:{ type:String, required:[true,"email is required"],trim:true,unique:true},
     password:{ type:String, required:[true,"password is required"]},
-    profilePic:{ type:String, default:"/images/default.jpeg"},
+    profilePic:{ type:String, default:"/images/default.jpeg"}, //inside public folder (for static files; app.use (express.static))
+
+    coverPhoto:{ type:String},
+
     likes:[{type:Schema.Types.ObjectId,ref:"Post"}],
     retweets:[{type:Schema.Types.ObjectId,ref:"Post"}],
     following:[{type:Schema.Types.ObjectId,ref:"User"}],
