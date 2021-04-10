@@ -66,6 +66,7 @@ $(document).ready(()=>{
     loadPosts() ////from home.js
 })
 function loadPosts(){ 
+    /*
     $.get('/api/posts',{postedBy:profileID, isReply:selectRps},(getPosts)=>{ //implicily
         //or isReply:selectRps=="true"//isReply:selected==="replies" //explicitly 
         //above two for selectRps='!{selectReplies}' or selectRps='!{`${selectReplies}`}' in profilePage.pug
@@ -77,4 +78,30 @@ function loadPosts(){
         //    console.log(getData) //populated data sent back by posts.js get '/' 
         outputPosts(getPosts,$('.postsContainer'))
         }) //F5 reflesh
+     */
+   ////ok but now add pinnedPost
+   
+   if(selectRps!==true&&selectRps!=='true'){ //OR if(selectRps!=true&&selectRps!='true')
+        $.get('/api/posts',{postedBy:profileID, pinned:true},(getPosts)=>{ 
+            outputPinnedPost(getPosts,$('.pinnedPostContainer'))
+        })
+   }
+    $.get('/api/posts',{postedBy:profileID, isReply:selectRps},(getPosts)=>{ //pinned:false
+        outputPosts(getPosts,$('.postsContainer'))
+    })
+}
+
+
+function outputPinnedPost(getData,container){
+    if(getData.length==0){
+        container.hide 
+        return 
+    }
+    container.html("")
+
+    getData.forEach(post=>{
+        var html=createPostHtml(post)//from fn from common.js
+        container.append(html)
+    }) //although only one pinned post
+
 }

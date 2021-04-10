@@ -93,8 +93,10 @@ block content
 
                 .coverPhotoContainer
                     //-add upload btn to the cover photo section //no default pic as profilePic; just blue bg
-                    if profileUser.coverPhoto!==undefined 
-                        img(src=profileUser.coverPhoto,alt="User's cover photo")
+                    if profileUser.coverPhoto 
+                        //-if profileUser.coverPhoto!==undefined  //both ok
+                        img(src=`${profileUser.coverPhoto}`,alt="User's cover photo")
+                        //-src=profileUser.coverPhoto //both ok
                         
                     if profileUser._id==userLoggedIn_profile._id 
                             button.coverPhotoButton(data-toggle='modal',data-target="#coverPhotoUploadModal")
@@ -153,6 +155,10 @@ block content
             //- or +createTab("Posts",`/profile/${profileUser.username}`,selectedTab!="replies")
             //- or +createTab("Replies",`/profile/${profileUser.username}/replies`,selectedTab=="replies")
 
+
+        .pinnedPostContainer
+
+
         .postsContainer(data-selectRps=`${selectReplies}` data-profid=`${profileUser._id}` data-profUsr=JSON.stringify(profileUser) data-usr=userLoggedInJs_profile)
         //- for testing (data-selectRps=JSON.stringify(selectReplies) data-profid=JSON.stringify(profileUser._id) data-profUsr=JSON.stringify(profileUser) data-usr=`${userLoggedInJs_profile}`)
         //- (data-selectRps=`${selectReplies}`) better not data-selectRps=selectReplies; data-profid=profileUser._id or `${profileUser._id}` strings both
@@ -161,6 +167,7 @@ block content
 
         +createReplyModal(userLoggedIn_profile)
         +createDeletePostModal(userLoggedIn_profile)
+        +createPinnedPostModal(userLoggedIn_profile)
         
         //-uploda profileimage
         +createImageUploadModal(userLoggedIn_profile)

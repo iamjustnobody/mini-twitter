@@ -31,7 +31,7 @@ $(document).ready(()=>{
 }) */
 //updated to only show the posts from people your following -> below & api routes posts.js
 $(document).ready(()=>{
-    $.get('/api/posts',{followingOnly:'true'},(getPosts)=>{ //{followingOnly:'true'} or {followingOnly:true}
+    $.get('/api/posts',{followingOnly:'false'},(getPosts)=>{ //{followingOnly:'true'} or {followingOnly:true}
             outputPosts(getPosts,$('.postsContainer'))
         }) 
 })

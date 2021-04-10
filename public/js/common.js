@@ -182,13 +182,14 @@ $("#deletePostModal").on("show.bs.modal",(event)=>{
     var postId=getPostIdFromElment(btn)
 
     //attach current post id to deleteBtn when open modal//data attribute is "id" & its value is postId
-    $("#deletePostButton").data("id",postId) 
-    console.log($("#deletePostButton").data().id)
+    $("#deletePostButton").data("id",postId)  //data-id="${postData._id}" @createHTMLelement btn
+    console.log($("#deletePostButton").data().id,typeof $("#deletePostButton").data().id)
 })
 $("#deletePostButton").on('click',(event)=>{ //#deletePostButton added to the page when page is loaded (mixin createDeletePost)
     //so detelebtn is there when page's loaded so clickHandler attached to deletebtn (sure clickHandler can be attached to document too)
-    var Id=$(event.target).data('id')
+    var Id=$(event.target).data('id') //data-id="${postData._id}" in createHTML element button
     console.log('deletedPostId',Id,typeof Id)  //string
+    
     $.ajax({
         url:`/api/posts/${Id}`,
             type:"DELETE",
@@ -197,8 +198,9 @@ $("#deletePostButton").on('click',(event)=>{ //#deletePostButton added to the pa
                 location.reload()
             }
         })
-})  //the original & retweet posts are deletable to original postedBy; retweetUsers small font at top/left corner
-//click/ delete any would delete just teh original (retweeted) post; later retweetPosts exist but undefined & retweetUsers (large font) shows undefined post
+})  //the original & retweet posts are deletable only to original postedBy; retweetUsers small font at top/left corner
+//click/ delete any would delete just teh original (retweeted) post; 
+//later retweetPosts exist but undefined & retweetUsers (large font) shows undefined post that's now deletable by retweetUser 
 //delete commentedPost -> comments posts remain without 'reply to' text
 
 $(document).on('click','.post',(event)=>{
@@ -374,6 +376,55 @@ $('#coverPhotoUploadButton').click(()=>{
     
 })
 
+
+
+//pin button @modal just like delete btn: attach data-id & click handler to the button
+$("#confirmPinModal").on("show.bs.modal",(event)=>{
+    var btn=$(event.relatedTarget); 
+    var postId=getPostIdFromElment(btn)
+    $("#pinPostButton").data("id",postId) //add postId to the pin btn once modal open //data-id="${postData._id}"
+    console.log($("#pinPostButton").data().id, typeof $("#pinPostButton").data().id)
+})
+$("#unpinModal").on("show.bs.modal",(event)=>{
+    var btn=$(event.relatedTarget); 
+    var postId=getPostIdFromElment(btn)
+    $("#unpinPostButton").data("id",postId) //add postId to the pin btn once modal open //data-id="${postData._id}"
+    console.log($("#unpinPostButton").data().id, typeof $("#unpinPostButton").data().id)
+})
+$("#pinPostButton").on('click',(event)=>{ 
+    var Id=$(event.target).data('id') //data-id="${postData._id}" in createHTMLelement button
+    console.log('pinPostId',Id,typeof Id)  //string
+    $.ajax({
+            url:`/api/posts/${Id}`,
+            type:"PUT",
+            data:{pinned:true},
+            success:(pinnedPost,status,xhr)=>{ //status is status msg; statusCode is in xhr
+                if(xhr.status!=204){alert("could not pin the post");return;}
+                location.reload()
+            }
+        })
+}) 
+$("#unpinPostButton").on('click',(event)=>{ 
+    var Id=$(event.target).data('id') //data-id="${postData._id}" in createHTMLelement button
+    console.log('unpinPostId',Id,typeof Id)  //string
+    $.ajax({
+            url:`/api/posts/${Id}`,
+            type:"PUT",
+            data:{pinned:false},
+            success:(pinnedPost,status,xhr)=>{ //status is status msg; statusCode is in xhr
+                if(xhr.status!=204){alert("could not pin the post");return;}
+                location.reload()
+            }
+        })
+}) //pin another = unpin pinned + pin another
+//retweetUser cannot delete or pin/unpin the retweet/retweetedPosts; retweetedUser when login can delete or unpin/pin retweet/retweetedPosts
+//the rewteetUser can un-retweet (or unlike) the retweet/retweetedPosts
+//repling to an existing post => is like posting a new normal/original post; can be liked/retweeted by anyone & pinned/deleted by someone who comments/replies
+//retweet teh commentPost will lose 'replying to' text unless click the retweetPost or (retweeted)commentPost to read it on postPage
+//because  post's retweetedPost (or called retweetData) (just ObjectId) is NOT populated (although postData in createHTML fn is retweetedPost)
+//anyone can comment/like/retweet any of the Post that becomes retweetedPost
+
+
 function getPostIdFromElment(element){
     var isRoot=element.hasClass('post')
     var rootElment= isRoot===true? element: element.closest(".post");
@@ -401,6 +452,7 @@ function createPostHtml(postData,largeFont=false){
     var retweetText=isRetweet?
     `<span> Retweeted by <a href='/profile/${retweetedBy}'>@${retweetedBy}</a></span>`:''
 
+    if(postData._id=='6071d280d69e9012686a84b9'){console.log("why")}
     var replyFlag=""
     //postData.commentedPost is Not null or undefined even if postData.commentedPost is not populated as postData.commentedPost is mongoObjId
     //but postData.commentedPost._id is undefined (also postData.commentedPost.postedBy) if postData.commentedPost not populated
@@ -430,9 +482,31 @@ function createPostHtml(postData,largeFont=false){
     var largeFontClass= largeFont?"largeFont":""
 
     var buttons="";
+    var pinnedPostText="" //shown pinned post for whoever this post originally posted by; NOT shown to other users when they login
+    //show pinned (if post is retweeted) still only to retweeted User not retweetUser
     if(postData.postedBy._id===userLoggedInJs._id){ //from req.session.user middleMW; req.session.user has ._id field (like db?)
         //pass userLoggedIn & userloggedInJs to main-layouts but only continue pass userLoggedInJs to frontend javascript
+        /*
         buttons=`<button data-id="${postData._id}" data-toggle="modal" data-target="#deletePostModal">
+                    <i class="fas fa-times"></i>
+                </button>`
+        */ //ok but now need to add pin button too see below updated btn
+
+        var dataTarget="#confirmPinModal"
+        var pinnedClass=""
+        //var pinnedPostText="" //shown as undefined on the website if diff user logged in; so lifted to global scope
+        if(postData.pinned===true){
+            pinnedClass="active"
+            pinnedPostText="<i class='fas fa-thumbtack'></i> <span> Pinned post </span>"
+            dataTarget="#unpinModal"
+        }
+        
+
+        //data-target="#confirmPinModal"; but now need to unpin if pinned; "#unpinModal" //linked to Modal@mixin.pug
+        buttons=`<button class='pinnedButton ${pinnedClass}' data-id="${postData._id}" data-toggle="modal" data-target=${dataTarget}>
+                    <i class="fas fa-thumbtack"></i>
+                </button>
+                <button data-id="${postData._id}" data-toggle="modal" data-target="#deletePostModal">
                     <i class="fas fa-times"></i>
                 </button>`
 
@@ -457,7 +531,11 @@ function createPostHtml(postData,largeFont=false){
                     <div class='userImageContainer'>
                         <img src='${postData.postedBy.profilePic}'>
                     </div>
+
                     <div class='postContentContainer'>
+
+                        <div class='pinnedPostText'>${pinnedPostText}</div>
+
                         <div class='postHeader'>
                             <a href='/profile/${postData.postedBy.username}' class='displayName'>${displayName}</a>
                             <span class='username'>@${postData.postedBy.username}</span>

@@ -3,6 +3,7 @@ const router=express.Router();
 const User=require('../../ModelSchema/UserSchema')
 const Post=require('../../ModelSchema/PostSchema')
 //no need app.use(views engine pug webViews) but do need app.use.parserurlencoded
+router.use(express.urlencoded({extended:false})); //POST
 
 /*
 router.get('/',(req,res,next)=>{  
@@ -225,7 +226,7 @@ console.log('afterLike',req.session.user.id,typeof req.session.user.id,req.sessi
 router.post('/:postid/retweet',async(req,res,next)=>{ 
     const id=req.params.postid; //or id=`${req.params.postid}` both ok
     const userId=req.session.user._id; //or userId=`${req.session.user._id}` both ok
-    console.log(id,userId)
+    console.log(id,typeof id, userId,typeof userId)
     
    const untweetPost=await Post.findOneAndDelete({postedBy:userId,retweetData:id}) //or {postedBy:`${userId}`,retweetData:`${id}`} both ok
    .catch(error=>{console.log(error);res.sendStatus(400);});
@@ -275,6 +276,36 @@ router.delete('/:postid',async(req,res,next)=>{
     })
     //or Post.findOneAndDelete({_id:`${req.params.postid}`}) or Post.findOneAndDelete({_id:req.params.postid})
 })
+
+
+
+//for pinning a post or edit an/any exiting post thats postedBy self; edit properties of self's posts 
+//a bit like /like & /retweet - pin/like/rewteet are all properties of one single post
+//but thats for the posts thats not postedBy - related to other users' posts
+//cannot modif others' posts properties - like/retweet these posts recorded (also user.findupdated) in user schema; marked the relation
+//user's pinned post is one of user's posts; but user's liked/retweet posts may not be in user's posts
+router.put('/:postid',async(req,res,next)=>{ 
+    //unpin all posts of this user
+    if(req.body.pinned!==undefined){ //unpin the currently pinned post; below repin another new unpinned post; as only one pinned post at a time 
+        await Post.updateMany({postedBy:req.session.user._id},{pinned:false})
+            .catch(error=>{
+                console.log(error);
+                res.sendStatus(400)
+            })
+    }
+    await Post.findByIdAndUpdate(req.params.postid,req.body) //req.body incl pinned property; 
+    //actually better to extract req.body's properties and just update these properties
+    .then(()=>res.sendStatus(204)) //no return updated/pinned post here; no new true
+    .catch(error=>{
+        console.log(error);
+        res.sendStatus(400)
+    })
+})
+
+
+
+
+
 
 async function getPosts(filter){
 /*    var results= await Post.find()

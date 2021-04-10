@@ -359,3 +359,14 @@ button span{
     /*aspect ratio or changing size of container but still image loss when expand & shrink webpage*/
     /*Object-fit*/
 }
+
+.pinnedButton.active{
+    color:var(--blue)
+}
+.pinnedPostText{
+    font-size:12px;
+    color:var(--greyText)
+}
+.pinnedPostContainer{
+    border-bottom: 10px solid rgb(230,236,240);
+}
