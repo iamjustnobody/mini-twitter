@@ -87,6 +87,7 @@ router.post('/profilePicture',upload.single('croppedImage'), async (req,res,next
         //return obj b4 update; {new:true}-> gives obj after update
         //now req.session.user updated; session var/data to reflect updated user w newUpdated profile pic anywhere on the server if user goes to other pages 
         //PUT/PATCH request here
+        //findById&Update: update DB; also need to update loggedinUser i.e. req.session.user
 
         res.sendStatus(204)
     }) //error cb fn executed after moving file; async

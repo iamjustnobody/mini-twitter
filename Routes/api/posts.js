@@ -65,6 +65,12 @@ router.get('/',async (req,res,next)=>{
         delete searchObj.followingOnly
     }
 
+    //for searchPage -> search post content
+    if(searchObj.search!=undefined){
+        searchObj.content={$regex:searchObj.search,$options:'i'}
+        delete searchObj.search
+    }
+
 
 
 
@@ -265,7 +271,7 @@ console.log('afterRetweet',updatedPost.id,typeof updatedPost.id,updatedPost._id,
  //and untweet wont make the post disappear straight away
 })
 
-
+//findById&Update: update DB; also need to update loggedinUser i.e. req.session.user
 
 router.delete('/:postid',async(req,res,next)=>{ 
     await Post.findByIdAndDelete(req.params.postid) 
@@ -284,10 +290,11 @@ router.delete('/:postid',async(req,res,next)=>{
 //but thats for the posts thats not postedBy - related to other users' posts
 //cannot modif others' posts properties - like/retweet these posts recorded (also user.findupdated) in user schema; marked the relation
 //user's pinned post is one of user's posts; but user's liked/retweet posts may not be in user's posts
+//so no need to User.findById&Update User schema does not have the posts (postedBy userself) related fields/properties
 router.put('/:postid',async(req,res,next)=>{ 
     //unpin all posts of this user
     if(req.body.pinned!==undefined){ //unpin the currently pinned post; below repin another new unpinned post; as only one pinned post at a time 
-        await Post.updateMany({postedBy:req.session.user._id},{pinned:false})
+        await Post.updateMany({postedBy:req.session.user._id},{pinned:false}) //or postedBy:req.session.user._id
             .catch(error=>{
                 console.log(error);
                 res.sendStatus(400)

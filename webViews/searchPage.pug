@@ -1,0 +1,27 @@
+extends layouts/main-layout
+
+block content
+    script. 
+        var userLoggedInJs=!{userLoggedInJs_search}
+    
+    .searchBarContainer 
+        i.fas.fa-search 
+        input#searchBox(type="text", name="searchBox", data-search=selectedTab,placeholder="search for posts or users")
+        //-selectedTab from payload of searchRoutes; or `${selectedTab}`
+
+    .tabsContainer
+            +createTab("Posts",`/search/posts`,selectedTab!='users')
+            //- a(href='/search') from main-layouts
+
+            +createTab("Users",`/search/users`,selectedTab=="users")
+
+    .resultsContainer 
+
+
+    +createReplyModal(userLoggedIn_search)
+    +createDeletePostModal(userLoggedIn_search)
+    +createPinnedPostModal(userLoggedIn_search)
+
+block scripts 
+    script(src='/js/search.js')
+    //-need .js here; from joint public folder (joint in app.js)

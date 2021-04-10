@@ -47,6 +47,7 @@ const logoutRoute=require('./Routes/logoutRoutes');
 const postRoute=require('./Routes/postRoutes');
 const profileRoute=require('./Routes/profileRoutes');
 const uploadRoute=require('./Routes/uploadRoutes');
+const searchRoute=require('./Routes/searchRoutes');
 
 //api routes
 const postsApiRoute=require('./Routes/api/posts');
@@ -63,7 +64,8 @@ app.use("/register",registerRoute)
 app.use("/logout",logoutRoute)
 app.use("/post",postRoute)
 app.use("/profile",middleware.requireLogin,profileRoute)
-app.use("/uploads",uploadRoute)
+app.use("/uploads",uploadRoute) //"/uploads" part of filePath
+app.use("/search",searchRoute) 
 
 
 app.use("/api/posts",postsApiRoute)
