@@ -48,11 +48,13 @@ const postRoute=require('./Routes/postRoutes');
 const profileRoute=require('./Routes/profileRoutes');
 const uploadRoute=require('./Routes/uploadRoutes');
 const searchRoute=require('./Routes/searchRoutes');
+const messagesRoute=require('./Routes/messagesRoutes');
 
 //api routes
 const postsApiRoute=require('./Routes/api/posts');
 const { type } = require('os');
 const usersApiRoute=require('./Routes/api/users');
+const chatsApiRoute=require('./Routes/api/chats');
 
 
 //app.use(middleware.requireLogin);
@@ -66,10 +68,12 @@ app.use("/post",postRoute)
 app.use("/profile",middleware.requireLogin,profileRoute)
 app.use("/uploads",uploadRoute) //"/uploads" part of filePath
 app.use("/search",searchRoute) 
+app.use("/messages",messagesRoute) 
 
 
 app.use("/api/posts",postsApiRoute)
 app.use("/api/users",usersApiRoute)
+app.use("/api/chats",chatsApiRoute)
 
 
 

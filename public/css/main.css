@@ -12,12 +12,26 @@
     --greenBgc:rgba(23,191,99,0.1);
     --blueBgc:rgba(212,237,255,0.6);
 }
+/*bcoz of the chatPage; but for all pages*/
+html,body{
+    height:100%;
+    min-height:100%;
+    background-color: #fff;
+    font-weight:300
+}
+.wrapper{
+    display: flex;
+    flex-direction: column;
+    height:100% /*of parent body tag*/
+}
+
 *{
     outline:none !important;
 }
 
 .wrapper > .row{ /*1st row instance found in wrapper*/
-    margin:0
+    margin:0;
+    height:100% /*of parent wrapper tag*/
 }
 
 a{
@@ -389,4 +403,189 @@ button span{
     background-color: var(--lightGrey);
     border:none;
     color:var(--greyText)
+}
+
+/*chatRoom*/
+.chatPageContainer{
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    flex:1 /*take up whole height*/
+}
+.chatTitleBar{
+    border-bottom: 1px solid var(--lightGrey);
+    display: flex;
+    align-items: center;
+    min-height: 60px; /*will grow/expand the height */
+    padding: 10px;
+}
+.chatTitleBar label{
+    margin:0 10px 0 0 /*central, not using margin-right: 10px*/
+}
+#userSearchTextbox{
+    border:none;
+    flex: 1;
+    font-weight: 200;
+    min-width:350px; /*multi-lines or line overflowing; overflowing users; not flex here*/
+}
+#createChatButton{
+    border:none;
+    background-color: var(--blue);
+    color:#fff;
+    padding: 7px 20px;
+    margin:10px auto; /*left & right equal length so centralise when the webpage's width larger or narrower*/
+    border-radius:40px;
+}
+#createChatButton:disabled{
+    background-color: var(--lightGrey);
+    color:var(--greyText)
+}
+
+/*newMessage.pug*/
+.selectedUser{
+    font-weight: 300px;
+    background-color: #cbe5fe;
+    color:#0084ff;
+    padding: 5px;
+    border-radius: 3px;
+    margin:5px 5px 0 0;
+    display: inline-block; /*element appears sidebyside & will overflow when gets too large for the container*/
+    /*as input field #userSearchTextbox has min-width of 350px*/
+}
+
+/*inboxPage*/
+.resultListItem{
+    padding: 7px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--lightGrey);
+}
+.resultListItem:hover{
+    background-color: #f2f2f2;
+}
+.resultsDetailsContainer{
+    display: flex;
+    flex-direction: column;
+    flex:1;
+}
+.resultsDetailsContainer .heading{
+    font-weight:500;
+}
+.resultsDetailsContainer .subText{
+    color:var(--greyText);
+    font-size:14px
+}
+.resultListItem img{
+    height:100%;
+    width:100%;
+    border-radius: 50%;
+}
+.resultsImagesContainer{
+    height:40px;
+    width:40px;
+    position:relative;
+    margin-right:10px;
+    display: flex;
+    align-items: center;
+    padding: 5px
+} /*above two: images will take up all the height of the container they are in*/
+/*group chat having extra className: set imageposition to absolute*/
+.groupChatImagesContainer img{
+    height:65%;
+    width:65%;
+    position:absolute;
+    bottom:0; /*2 images stack up*/
+    margin:0; /*remove margin-right 10px*/
+    border:2px solid #fff
+}
+.groupChatImagesContainer img:first-of-type{
+    top:0;
+    right:0
+}
+.ellipsis{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
+}
+
+/*chatPage.pug*/
+.chatTitleBarContainer{
+    border-bottom: 1px solid var(--lightGrey);
+    display: flex;
+    align-items: center;
+    padding: var(--spacing)
+}
+#chatName{
+    width:100%;
+    border:1px solid transparent; /*to start w; hover -> shows & just like textbox*/
+    padding: 0 5px; /*for images*/
+}
+#chatName:hover{
+    border: 1px solid #e9e9e9;
+    cursor:text;
+}
+.chatContainer{
+    flex:1; /*take up al width*/
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden; /*hidden from parentContainer*/
+}
+.chatContainer .footer{
+    display: flex;
+    padding: var(--spacing);
+    flex-shrink: 0px;
+}
+.chatContainer .footer textarea{
+    flex:1;
+    resize:none; /*users cannot expand textarea*/
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 18px;
+    border:none;
+    padding: 8px 12px;
+    height:38px /*not grow when text starts overflow; already starts w */
+}
+.chatContainer .footer button{
+    background-color: transparent;
+    color:var(--blue);
+    font-size: 24px;
+}
+.chatMessages{
+    flex:1;
+    display: flex;
+    overflow-y: auto; /*show scrolll bar on y axis if overflow*/
+    flex-direction: column;
+    padding: var(--spacing);
+}
+.chatImagesContainer{
+    display: flex;
+    flex-direction: row-reverse; /*margin-left in img below*/
+    height:100%;
+    margin-right: 10px; /*space to text*/
+}
+.chatImagesContainer img{
+    width:40px;
+    height:40px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    /*margin-left:-10px; //row-reverse above from parent Container*/
+}
+.chatImagesContainer img:not(:last-child),
+.chatImagesContainer .userCount{ /*apply to num; +remainingUsers*/
+    margin-left: -10px; /*row-reverse above from parent Container*/
+}
+.chatImagesContainer .userCount{ /*apply to num; +remainingUsers*/
+    height:40px;
+    width:40px;
+    background-color: #f1f1f1;
+    border-radius: 50%;
+    align-items: center;
+    justify-self: center;
+    font-size: 14px;
+    border:2px solid #fff
+}
+/*modal for changing chat name*/
+#chatNameTextbox{
+    width:100%
 }

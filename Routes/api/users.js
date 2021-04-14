@@ -87,8 +87,9 @@ router.post('/profilePicture',upload.single('croppedImage'), async (req,res,next
         //return obj b4 update; {new:true}-> gives obj after update
         //now req.session.user updated; session var/data to reflect updated user w newUpdated profile pic anywhere on the server if user goes to other pages 
         //PUT/PATCH request here
-        //findById&Update: update DB; also need to update loggedinUser i.e. req.session.user
-
+        //findById&Update: update DB; also need to update loggedinUser i.e. req.session.user; 
+        //just like Tour proj: res.locals.user (updated user from authJs) vs twwitter proj (each non-apiRoutes payloads - updat user from req.session)
+        //POST to fs; put/patch to Users mongoDB
         res.sendStatus(204)
     }) //error cb fn executed after moving file; async
     //res.send(204) //executing straight away
@@ -128,4 +129,37 @@ router.post('/coverPhoto',upload.single('croppedImage'), async (req,res,next)=>{
     //res.send(204) //executing straight away
 
 })
+
+
+
+//for searching users on searchPage
+router.get('/',async (req,res,next)=>{
+    //const searchTerm=req.query.search //if this is not undefined
+    var searchObj=req.query //or remove this line (or just var searchObj) & $regex:req.query.search below
+    //{search:searchTerm} from search.js; req.query.search is a trimmed value
+    console.log('user searchObj b4 search ',searchObj) //frontend search.js ensures this api route will only be called if no empty string after trimmed
+    //so ensures req.query is not empty string adn has length
+    if(searchObj.search!=undefined){
+        searchObj={
+            $or:[
+                {fName:{$regex:searchObj.search,$options:'i'}}, //partial match & lower case
+                {lName:{$regex:searchObj.search,$options:'i'}},
+                {username:{$regex:searchObj.search,$options:'i'}}
+            ]
+        }
+    }
+    //const usrs=await User.find(searchObj)
+    //res.status(200).send(usrs)
+    User.find(searchObj)
+    .then(results=>{
+        res.status(200).send(results)
+    })
+    .catch(error=>{
+        console.log(error)
+        res.sendStatus(400)
+    })
+})
+
+
+
 module.exports=router

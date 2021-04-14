@@ -132,3 +132,53 @@ mixin createUnpinPostModal()
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
                     button#unpinPostButton.btn.btn-primary(type='button') Unpin
+
+
+//-for chatPage.pug
+mixin createChatImage(chatData,userLoggedIn)
+    //- 2 objects as arguments
+    if(!chatData)
+        return 
+
+    - var i=0
+    - var maxImages2Show=3
+    - var remainingUsers=chatData.users.length-maxImages2Show 
+    - remainingUsers -- //remove one as we wont show out own image
+
+
+    .chatImagesContainer 
+
+        if remainingUsers>0 
+            .userCount 
+                span +#{remainingUsers}
+        //-above userCounter b4 below users array/list img display; coz row-reverse in css
+        each user in chatData.users
+            if(chatData.users.length!=1&&user.id==userLoggedIn_chat._id)
+                -continue
+            else if i>=maxImages2Show 
+                -break
+
+            img(src=`${user.profilePic}`,alt="User's profile picture", title=`{user.fName}`)
+            //- img(src=user.profilePic,alt="User's profile picture", title=user.fName)
+            //- users being populated by get('/:chatid') from non-api-messageRoutesJs
+            - i++
+
+mixin createChatNameModal(chat)
+    #chatNameModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='chatNameModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#chatNameModalLabel.modal-title Change the name
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') &times;
+                .modal-body
+                    input#chatNameTextbox(type="text", placeholder='Enter a name for this chat',value=chat.chatName) 
+                    //- or value=chat.chatName or value=`${chat.chatName}`     
+                    //- chat.chatName: if no chatName field in db then no value field in html Element inspect; if chatName='' indb then <value>
+                    //- both above show placeholder in the inputbox bar
+                    //- `${chat.chatName}`: if no chatName field in db then <value="undefined"> in html Element inspect;
+                    //- `${chat.chatName}`: if chatName='' indb then <value> & shows placeholder in the inputbox bar
+                    //- value=`${chat.chatName}` or value=chat.chatName show either defualt name or chat name if both defined in '/messages/chatid' messagesRoutesJs
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
+                    button#chatNameButton.btn.btn-primary(type='button') Save

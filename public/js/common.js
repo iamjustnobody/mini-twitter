@@ -217,7 +217,7 @@ $(document).on('click','.post',(event)=>{
 })
 
 
-//profilePage.js
+//below one could be in profilePage.js
 $(document).on('click','.followButton',(event)=>{ //css class of followButton
     var button=$(event.target);
     var profileUserId=button.data().userid;
@@ -401,7 +401,20 @@ $("#pinPostButton").on('click',(event)=>{
             success:(pinnedPost,status,xhr)=>{ //status is status msg; statusCode is in xhr
                 if(xhr.status!=204){alert("could not pin the post");return;}
                 location.reload()
-            }
+
+                /*
+                pinnedClass="active"
+                $('.pinnedButton').addClass('active')
+                pinnedPostText="<i class='fas fa-thumbtack'></i> <span> Pinned post </span>"
+                //$('.pinnedPostText').append(pinnedPostText)
+                ////$('.pinnedPostText').text(pinnedPostText) //text would be html text; allpy to all
+                dataTarget="#unpinModal"
+                $(".pinnedButton.active").data("target","#unpinModal")
+                *///and need to hide modal
+               //above apply to all other posts on the web multiple pin & pinposttext; not specific to this post
+                //unlike submitting a new normal post above - target at this new post
+                //also unlike $('#chatNameButton').click in chatPageJs -> only one input box/bar for (changing) chatname
+                }
         })
 }) 
 $("#unpinPostButton").on('click',(event)=>{ 
@@ -414,6 +427,19 @@ $("#unpinPostButton").on('click',(event)=>{
             success:(pinnedPost,status,xhr)=>{ //status is status msg; statusCode is in xhr
                 if(xhr.status!=204){alert("could not pin the post");return;}
                 location.reload()
+
+                /*
+                $('.pinnedButton').removeClass('active')
+                pinnedPostText="<i class='fas fa-thumbtack'></i> <span> Pinned post </span>"
+                $('.pinnedPostText').html(pinnedPostText)
+                //$('.pinnedPostText').append(pinnedPostText) //pin then unpin -> pinnedPostText twice for this post; add A pinnedposttext to all
+                ////$('.pinnedPostText').text(pinnedPostText) //text would be html text; apply to all
+                dataTarget="#confirmPinModal"
+                $(".pinnedButton").data("target","#confirmPinModal")
+                */ //and need to hide modal
+               //above apply to all other posts on the web multiple pin & pinposttext; not specific to this post
+                //unlike submitting a new normal post above - target at this new post
+                //also unlike $('#chatNameButton').click in chatPageJs -> only one input box/bar for (changing) chatname
             }
         })
 }) //pin another = unpin pinned + pin another
@@ -423,6 +449,38 @@ $("#unpinPostButton").on('click',(event)=>{
 //retweet teh commentPost will lose 'replying to' text unless click the retweetPost or (retweeted)commentPost to read it on postPage
 //because  post's retweetedPost (or called retweetData) (just ObjectId) is NOT populated (although postData in createHTML fn is retweetedPost)
 //anyone can comment/like/retweet any of the Post that becomes retweetedPost
+
+
+
+
+
+//for replacing newMessage.js; or create newMessageJs put the following in newMessage.Js
+//var timer=1000; //so timer in search.js can be removed if commonJs b4 searchJs in main-layouts & var timer (must be) defined in here commonJs; 
+//above var timer can be removed if searchJs if b4 commonJs +timer (must be) defined here in searchJs 
+//or rename timer in commonJs or searchJs; 
+//console.log("timer",timer)
+//otherwise create newMessageJs & move following to newMessageJs
+/*
+$(searchBox).keydown((event)=>{
+    clearTimeout();//reset previous timer
+    var textbox=$(event.target)
+    var value=textbox.val()
+    var searchType=textbox.data().search //data-search in searchPage.pug//selectedTab from searchRoutes
+    console.log('searchbox:',value,searchType)
+    timer=setTimeout(() => {
+        value=textbox.val().trim();
+        if(value=='') $(".resultsContainer").html('')
+        else{console.log(value);search(value,searchType)}
+    }, 1000);
+})
+function search(searchTerm,searchType){
+    var url=searchType=="users"?"/api/users":"/api/posts"  
+    $.get(url,{search:searchTerm},(searchRes)=>{ //req.query.search in api routes // '/?&'
+        console.log('search results ',searchRes) //populated (as defined in getPosts in posts.js) searchRes
+        if(searchType=='users') outputUsers(searchRes,$(".resultsContainer"))
+        else outputPosts(searchRes,$('.resultsContainer'))
+    })
+}*/
 
 
 function getPostIdFromElment(element){
@@ -625,6 +683,8 @@ function outputPosts(getData,container){
     if(getData.length==0){container.append("<span class='noResults'> Nothing to show </span>")}
 }
 
+
+//below click single post redirect to postPage; below fn used in postPage show repliedTo posts & comments on loaidng
 function outputPostsWithReplies(getData,container){
     container.html("")
 

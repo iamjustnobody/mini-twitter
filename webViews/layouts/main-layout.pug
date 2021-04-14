@@ -47,7 +47,7 @@ html(lang="en")
                         i.fas.fa-search
                     a(href='/notifications')
                         i.fas.fa-bell
-                    a(href='/mesages')
+                    a(href='/messages')
                         i.fas.fa-envelope
                     a(href='/profile')
                         i.fas.fa-user
@@ -56,6 +56,10 @@ html(lang="en")
                 .mainSectionContainer.col-10.col-md-8.col-lg-6
                     .titleContainer 
                         h1 #{pageTitle}
+
+                        block headerButton 
+                        //-mainly for inboxPage.pug for chats & notification page
+
                     block content 
                 .d-none.d-md-block.col-md-2.col-lg-4
                     span third column

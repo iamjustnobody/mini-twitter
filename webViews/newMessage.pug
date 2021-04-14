@@ -1,0 +1,22 @@
+extends layouts/main-layout
+
+block content
+    script.
+        var userLoggedInJs=!{userLoggedInJs_newMsg}
+        
+    .chatPageContainer 
+        .chatTitleBar 
+            label(for="userSearchTextbox") To:
+            //- label clicked to activate the input; 'for' value is the inputID
+            #selectedUsers 
+                input#userSearchTextbox(type="text", name="",placeholder="Type the name of the person")
+        
+        .resultsContainer
+        button#createChatButton(disabled) Create Chat
+        //-<button id="createChatButton" disabled="disabled">Create Chat</button>
+
+
+block scripts 
+    script(src='/js/newMessage.js')
+    //-need .js here; from joint public folder (joint in app.js)
+//-just use commonJs instead - content similar to searchJs

@@ -1,0 +1,89 @@
+extends layouts/main-layout
+
+block content
+    script. 
+        var userLoggedInJs=!{userLoggedInJs_chat}
+    if errorMessage 
+        span.errorMsg #{errorMessage}
+    //-else //else if chat
+        script. 
+            var chatID1='!{chat._id}'
+        //-    alert(chatID1)
+            alert(typeof chatID1) //string var chatID='xx'
+        script. 
+            var chatID2='!{chat.id}'
+        //-    alert(chatID2)
+            alert(typeof chatID2) // string var chatID='xx'
+        script. 
+            var chatID3='!{`${chat._id}`}'
+        //-    alert(chatID3)
+            alert(typeof chatID3) //stirng var chatID='xx'
+        script. 
+            var chatID4='!{`${chat.id}`}'
+        //-    alert(chatID4)
+            alert(typeof chatID4) //string var chatID='xx'
+        //- error below ID scripts; console@chatPage not defined; var chatID=xx
+        //-script. 
+            var chatID5=!{chat._id}
+            alert(chatID5)
+            alert(typeof chatID5)
+        //-script. 
+            var chatID6=!{chat.id}
+            alert(chatID6)
+            alert(typeof chatID6)
+        //-script. 
+            var chatID7=!{`${chat._id}`}
+            alert(chatID7)
+            alert(typeof chatID7)
+        //-script. 
+            var chatID8=!{`${chat.id}`}
+            alert(chatID8)
+            alert(typeof chatID8)
+        //-.test(data-id1=chat._id data-id2=chat.id data-id3=`${chat._id}` data-id4=`${chat.id}`)
+            //-data-id='xx'
+        
+        //-p
+            p #{chat._id}   #{typeof chat._id} #{chat.id}   #{typeof chat.id} //-obj string
+            p=`${chat._id} ${typeof chat._id} ${chat.id} ${typeof chat.id}` //obj string
+            p=typeof chat._id //obj
+            p=typeof chat.id //string
+    
+    
+    else 
+        script. 
+            var chatID='!{chat._id}'
+        script. 
+            var chatJs=!{chatJs}
+        .chatPageContainer 
+            .chatTitleBarContainer 
+                +createChatImage(chat,userLoggedIn_chat)
+                //-above mixin uses each user.fName in chatData.users from messagesRoutes.js get('/:chatid') find&Update.populate('users')
+                //-normally populated @apiRoutesJs thats called @frontendJs page onload; so res.send(populatedData) to frontendJS
+                //-normally non-apiRoutes GET payload (or res.locals@MW next()) -> pug (only base/foundation) -> frontnedJs calls/returns apiRoutes GET find.populated
+                span#chatName(data-toggle='modal',data-target="#chatNameModal") #{chat.chatName?chat.chatName:'This is the chat'}
+                //-#chatNameModal id of the modal created in mixin.pug see below createChatNameModal(chat)
+                //-#{chat.chatName?chat.chatName:'This is the chat'} or =`${chat.chatName?chat.chatName:'This is the chat'}`
+                //- need to design a new default name (with usersArray) rather than 'this is the chat', 
+                //-using chatPageJs on padeLoading (may after changing chatname & reload), not backend server User awaits to update chatName field, nor aggregate
+                //-defaultName @span's innerHTML/TEXT which will appears on webPage; unlike mixin createChatImage <value=chat.chatName> no value field if no chatName (undefined)
+                //- just using documentReady & get chatData when pageLoaded - also corresponding to windowReload after changing chatName
+                //- &using same logic/fn in inboxPage.js which uses createChatHtml(chatData) to display name when chatname unavailable (no such field in db or '' indb)
+                //-outcome: if no chatname, shows 'this is the chat' very briefly then chatUsersNamesArray as pageOnload in chatPageJs & get('/:chatid') in chatsJs
+            
+            .mainContentContainer 
+                .chatContainer 
+                    .chatMessages
+
+                    .footer 
+                        textarea.inputTextbox(name="messageinput", placeholder='Type a messsage...')
+                        button.sendMessageButton 
+                            i.fas.fa-paper-plane 
+
+                        //- using .inputTextbox not #inputTextbox as former's related fn in chatPageJs will be applied to all w class .inputTextbox 
+                        //- whilst the latter one is unique can only attached to one htmlEl; using '.' not '#' in case if plan to create multiple pop up windows/chats
+
+        +createChatNameModal(chat)
+
+block scripts 
+    script(src='/js/chatPage.js')
+    //-need .js here; from joint public folder (joint in app.js)

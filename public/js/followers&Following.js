@@ -11,6 +11,11 @@ function loadFollowers(){
     })
 }
 
+
+
+//now below moves to common.js as not only f&F use these fn search also use these when searching users
+//or keep here & copy paste teh same to search.js
+
 function outputUsers(getUsersData,container){
     container.html("")
 
@@ -30,6 +35,8 @@ function createUserHtml(userData,showFollowButton){ //no show followBtn for grou
     var name=userData.fName+" "+userData.lName
     var isFollowing= userLoggedInJs.following && userLoggedInJs.following.includes(userData._id)
 //just like userLoggedIn_profile.following && userLoggedIn_profile.following.includes(profileUsrid) in profilePage.pug
+//userLoggedInJs@JS here is JSON.parse(JSON.stringify(userLoggedIn_profile@pug))
+
     var text = isFollowing?"Following":"Follow"
     var buttonClass = isFollowing?"followButton following":"followButton"
 

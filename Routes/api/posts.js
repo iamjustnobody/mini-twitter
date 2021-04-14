@@ -66,10 +66,12 @@ router.get('/',async (req,res,next)=>{
     }
 
     //for searchPage -> search post content
-    if(searchObj.search!=undefined){
+    if(searchObj.search!=undefined){ //or remove var searchObj=req.query @top above (or just var searchObj) & $regex:req.query.search below
         searchObj.content={$regex:searchObj.search,$options:'i'}
         delete searchObj.search
     }
+    
+    //if no searchTerm i.e. searchObj={} or req.query={} => Posts.find({}) => findAll posts
 
 
 
@@ -290,7 +292,8 @@ router.delete('/:postid',async(req,res,next)=>{
 //but thats for the posts thats not postedBy - related to other users' posts
 //cannot modif others' posts properties - like/retweet these posts recorded (also user.findupdated) in user schema; marked the relation
 //user's pinned post is one of user's posts; but user's liked/retweet posts may not be in user's posts
-//so no need to User.findById&Update User schema does not have the posts (postedBy userself) related fields/properties
+//so no need to User.findById&Update User schema does not have the posts (thats postedBy userself) related fields/properties
+//so no need to update req.session.user -> nonapiRoutes userloggedin(Js) payload or middleware res.locals
 router.put('/:postid',async(req,res,next)=>{ 
     //unpin all posts of this user
     if(req.body.pinned!==undefined){ //unpin the currently pinned post; below repin another new unpinned post; as only one pinned post at a time 

@@ -1,0 +1,16 @@
+extends layouts/main-layout
+
+block content
+    script. 
+        var userLoggedInJs=!{userLoggedInJs_inbox}
+    
+    .resultsContainer
+
+block headerButton 
+    a(href="/messages/new") 
+        //-full url path from app.js to messageRoutes.js 
+        i.far.fa-plus-square
+
+block scripts 
+    script(src='/js/inboxPage.js')
+    //-need .js here; from joint public folder (joint in app.js)
