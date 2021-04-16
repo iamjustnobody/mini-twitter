@@ -12,8 +12,9 @@ $('#userSearchTextbox').keydown((event)=>{ //$(userSearchTextbox).keydown((event
 
     if(value==""&&(event.which==8||event.keyCode==8)){
         //remove user from selection 
-        selectedUsers.pop()
-        updateSelectedUsersHtml()
+        selectedUsers.pop() //1
+        updateSelectedUsersHtml() //ok 1
+     //   deleteSelectedUserHtmlOneByOne(); //ok too 2
         //also remove all searchItems displayed on the output list
         $(".resultsContainer").html('')
         //createChat btn disabled when no user selected in the input box/search field i.e. no one in the selectedUsers array
@@ -56,14 +57,15 @@ function outputSelectableUsers4Chats(getUsersData,container){
             //not create/show userself or the users already selected
             return
         } //next userData; leave this cb
-        var htmlEl=createUserHtml(userData,true) //create each element to be displayed below for selection4Chats/ for click
+        var htmlEl=createUserHtml(userData,true) //create each userelement to be displayed below for selection4Chats/ for click
         
         var element=$(htmlEl) //create jquery Obj
 
         //container.append(htmlEl)
         container.append(element) //each element displayed on the output list for click/selection
 
-        element.click(()=> userSelected(userData)) //click/select element displayed on the list (shown when timeout after typing sth)
+        element.click(()=> userSelected(userData)) //add click handler
+        //click/select element displayed on the list (shown when timeout after typing sth)
         //when click, adding selected element to the 'To' field
     })
 
@@ -77,16 +79,17 @@ function outputSelectableUsers4Chats(getUsersData,container){
 
 function userSelected(user){
     //add selected user from teh display/output list to the selectedUsers array of returned mongoDB doc Obj
-    selectedUsers.push(user)
+    selectedUsers.push(user) //1
     //add all selected users to the inputbox/search field
-    updateSelectedUsersHtml()
+     updateSelectedUsersHtml() //ok 1
+    // addSelectedUserHtmlOneByOne(user) //ok too 2
     //clear the input search box (required/searched userA; maybe partial typing userA's name; all need clearing after clicking/selecting/adding) after selecting & adding the matched userA; 
     //will start typing next person's name (once start typing /keydown, searchRes list shown again on o/p)
     //after selecting one user from the output list
     $('#userSearchTextbox').val("").focus()
     //clear display/output list of search results (after already selecting needed user) 
     //so can search for next person's name when typing new searchee name
-    $(".resultsContainer").html('')
+    $(".resultsContainer").html('')  
     //enable (undisable) the createChatbtn as there's def already at least one user selected
     $("#createChatButton").prop("disabled",false)
 //keep typing for next user in inbox search field/box; show (partial) matched users on next o/p list; select one repeat above
@@ -101,10 +104,41 @@ function updateSelectedUsersHtml(){ //create userElement  to be added to the inp
         elements.push(userElement)
     })
     //now need ot add the elements to teh inputbox/searchField (req.query backend)
-    //firstly removing exisitng ones/elements (with above created class 'selectedUser')
+    //firstly removing exisitng ones/elements userElements (with above created class 'selectedUser')
     $(".selectedUser").remove() 
     //adn then add above elements to/b4 #selectedUsers
     $("#selectedUsers").prepend(elements)
+}
+function addSelectedUserHtmlOneByOne(user){
+        var name =user.fName+" "+user.lName //or using backtick injection
+        var userElement=$(`<span class='selectedUser'>${name}</span>`)
+        console.log(selectedUsers.length)
+        //$("#selectedUsers").prepend(userElement)
+        $("#selectedUsers>:last").before(userElement) //ok
+       //$("#selectedUsers :last").before(userElement) //ok
+       //$("#selectedUsers").children().last().before(userElement) //ok
+       //$("#selectedUsers :last-child").before(userElement) //ok
+       //$("#selectedUsers span:last-child").after(userElement) //not ok here as initially no span 
+      // $("#selectedUsers span:last").after(userElement) //not ok here as initially no span 
+       //$("#selectedUsers .selectedUser").last().after(userElement) //not ok here as initially no '.selectedUser'
+      // $(".selectedUser :last-of-type").after(userElement) //not ok here as initially no '.selectedUser'
+      // $("#selectedUsers").children(".selectedUser").last().after(userElement) //not ok here as initially no '.selectedUser'
+        //create another container just for these elements
+}
+function deleteSelectedUserHtmlOneByOne(){
+    $("#selectedUsers").children().last().prev().remove() //ok
+    //$("#selectedUsers :nth-last-child(2)").remove() //OK
+    //$("#selectedUsers .selectedUser:nth-last-of-type(1)").remove() //ok
+    //$("#selectedUsers span:nth-last-of-type(1)").remove() //OK
+    //$("#selectedUsers .selectedUser").last().remove()//OK
+    //$("#selectedUsers span").last().remove()//OK same as above
+    //$("#selectedUsers .selectedUser:last").remove() //OK
+    //$("#selectedUsers span:last").remove() //ok same as above
+    //$("#userSearchTextbox").closest('.selectedUser').remove()//no as closest travel up DOM tree (from curEl to parent())
+    //$("#userSearchTextbox").siblings().last().remove();//ok next() prev() first() last()
+    //$("#userSearchTextbox").prev('.selectedUser').remove() //ok
+    //$("#userSearchTextbox").prev('span').remove()//ok same as above
+    //remove #selectedUsers' last child or remove teh el closest to usersearchtextbox //slow pointer as records
 }
 
 
@@ -119,7 +153,7 @@ function createUserHtml(userData,showFollowButton){ //no show followBtn for grou
     var buttonClass = isFollowing?"followButton following":"followButton"
 
     var followButton=""
-    if(showFollowButton && userLoggedInJs._id != userData._id){
+    if(showFollowButton && userLoggedInJs._id != userData._id){ //both ._id strings?!
         followButton = `<div class='followBtnContainer'> 
                             <button class='${buttonClass}' data-user='${userData._id}'>${text}</button>
                         </div>`

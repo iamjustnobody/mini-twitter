@@ -24,7 +24,10 @@ router.post('/',async(req,res,next)=>{
         const user=await User.findOne({
             $or:[{username:req.body.logUserName},{email:req.body.logUserName}]
         })
-    /*    .then(()=>{
+        /*.then(()=>{return res.status(200).render('register',payload)}) //return or not will still running next then (etc as belows in sequence);
+        //& will cause error in this case: set headers after sent to client 
+        //return opt -> required when async fn inside this then & followings need returned val/data/res from this async fn inside this then
+        .then(()=>{
             console.log("Iam going to throw an error") //running
             throw new Error("iam the new error"); //carry errors through 2 to 3 (like fall to 3) or throught 2 & 3b (if no3) to catch 4 (like fall to 4)
             console.log("new error thrown") //not running

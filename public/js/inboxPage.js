@@ -23,7 +23,7 @@ function outputChatList(chatList,container){
 function createChatHtml(chatData){
     var chatname=chatData.chatName?chatData.chatName:getOtherChatUsersNamesString(chatData.users); //also copied to chatPageJs
     var images=getChatImageElments(chatData)
-    var latestMsg="this is latest Msg"
+    var latestMsg=getLatestMsg(chatData.latestMessage)
 
     return `<a href='/messages/${chatData._id}' class='resultListItem'>
                 ${images}
@@ -33,6 +33,19 @@ function createChatHtml(chatData){
                 </div>
             </a>`; //return html ///messagesRoutes url path
 }
+
+
+function getLatestMsg(latestMsg){ //populate chatData.latestMessage
+    if(latestMsg!=null){
+        var sender=latestMsg.sender
+        //return `${latestMsg.msgContent}` //undefined if not populate chat.latestMessage at chatsJs get'/api/chats'
+        return `${sender.fName} ${sender.lName}: ${latestMsg.msgContent}` 
+        //also need to populate chatData.latestMessage.sender chatsJs get'/api/chats'
+    } //latestMessage from POST request @messagesJs api route
+    return 'New chat' //just create a new chat have not sent any messages in this new chat yet
+}
+
+
 
 function getOtherChatUsersNamesString(users){
     var otherChatUsers=getOtherChatUsers(users);

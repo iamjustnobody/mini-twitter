@@ -55,6 +55,7 @@ const postsApiRoute=require('./Routes/api/posts');
 const { type } = require('os');
 const usersApiRoute=require('./Routes/api/users');
 const chatsApiRoute=require('./Routes/api/chats');
+const messagesApiRoute=require('./Routes/api/messages');
 
 
 //app.use(middleware.requireLogin);
@@ -74,6 +75,7 @@ app.use("/messages",messagesRoute)
 app.use("/api/posts",postsApiRoute)
 app.use("/api/users",usersApiRoute)
 app.use("/api/chats",chatsApiRoute)
+app.use("/api/messages",messagesApiRoute)
 
 
 

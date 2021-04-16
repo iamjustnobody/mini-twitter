@@ -145,6 +145,9 @@ button span{
 .mainContentContainer{
     float: 1;
     display: flex;
+
+    overflow-y:hidden 
+    /*scrollbar will kick in if theres overflow bcoz it's hidden so we need to scroll to see it*/
 }
 .postContentContainer{
     padding-left: var(--spacing);
@@ -411,7 +414,10 @@ button span{
     flex-direction: column;
     min-height: 0;
 
-    flex:1 /*take up whole height*/
+    flex:1; /*take up whole height; take up all of teh availabel space that it has*/
+    flex-basis:0 /*shrink to take up as little space as it can whilst fitting all of its content*/
+    /*dont take up more space than ou need to in order to fill all the space u have*/
+    /*so it will take up all of the space of the container it's in but it wont extend past container at all*/
 }
 .chatTitleBar{
     border-bottom: 1px solid var(--lightGrey);
@@ -588,4 +594,98 @@ button span{
 /*modal for changing chat name*/
 #chatNameTextbox{
     width:100%
+}
+
+
+/*222 send messages in a chat: li class defined in chatPage.js for sedning messages*/
+.chatMessages .message{
+    padding-bottom: 2px;
+    list-style: none;
+    display: flex;
+    align-items: flex-end; /*push down to bottom*/
+    flex-shrink:0;
+    -webkit-flex:0; /*fix unscrolling, overlap, squashed on top of each other issue*/
+}
+.chatMessages .message .messageBody {
+    background-color: #f1f0f0;
+    padding: 6px 12px;
+    border-radius: 18px;
+    font-size: 14px;
+}
+.chatMessages .message .messageContainer{
+    max-width: 55%;
+    display: flex;
+    flex-direction: column;
+}
+.chatMessages .message.mine{
+    flex-direction: row-reverse;
+}
+.chatMessages .message.mine .messageBody {
+    background-color: var(--blue);
+    color:#fff
+}
+
+.chatMessages .message.mine .messageContainer{
+    align-items: flex-end;
+}
+.chatMessages .message.theirs .messageContainer{
+    align-items: flex-start; /*push to the start; not taking up whole space/width; defualt stretch*/
+}
+
+.chatMessages .message.mine.first .messageBody{
+    border-bottom-right-radius: 2px;
+}
+.chatMessages .message.mine:not(.first):not(.last) .messageBody{
+    border-bottom-right-radius: 2px;
+    border-top-right-radius: 2px;
+}
+.chatMessages .message.mine.last .messageBody{
+    border-bottom-right-radius: 18px;
+}
+.chatMessages .message.mine.last:not(.first) .messageBody{
+    border-top-right-radius: 2px;
+}
+/*theirs*/
+.chatMessages .message.theirs.first .messageBody{
+    border-bottom-left-radius: 2px;
+}
+.chatMessages .message.mine:not(.first):not(.last) .messageBody{
+    border-bottom-left-radius: 2px;
+    border-top-left-radius: 2px;
+}
+.chatMessages .message.theirs.last .messageBody{
+    border-bottom-left-radius: 18px;
+}
+.chatMessages .message.mine.last:not(.first) .messageBody{
+    border-top-left-radius: 2px;
+}
+
+.senderName{
+    color:rgba(0,0,0,0.4)
+}
+
+.chatMessages .imageContainer{
+    height:24px;
+    width: 24px;
+    margin-right:7px; /*space btween image & container*/
+}
+.chatMessages img{
+    height:100%;
+    border-radius: 50%;
+    vertical-align: bottom;
+}
+
+.chatMessages .message.last{
+    margin-bottom: 7px; /*distance btween last msg & next msg*/
+}
+
+.loadingSpinnerContainer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; /*support horizontally centered*/
+}
+.loadingSpinnerContainer img{
+    width: 50%;
+    max-width: 75px;
 }

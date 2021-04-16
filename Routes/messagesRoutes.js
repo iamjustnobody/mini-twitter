@@ -46,6 +46,9 @@ router.get('/:chatid',middleware.requireLogin,async(req,res,next)=>{
     }
 
     var chat=await Chat.findOne({_id:chatID,users:{$elemMatch:{$eq:userID}}}).populate("users")
+    //{$eq:userID} ok;{$eq:`${userID}`} ok; $eq:`${mongoose.Types.ObjectId(userID)}` ok; $eq:mongoose.Types.ObjectId(`${userID}`) ok
+    //{$eq:mongoose.Types.ObjectId(userID)} ok
+    //chatID mongoose.Types.ObjectId(chatID) both ok//`${chatID}`Ok//mongoose.Types.ObjectId(`${chatID}`) ok//`${mongoose.Types.ObjectId(chatID)}`Ok
     if(chat!=null){console.log('/chatid2',typeof chat.id,typeof chat._id)} //string //obj
 
     if(chat==null){

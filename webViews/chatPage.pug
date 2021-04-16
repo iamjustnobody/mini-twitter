@@ -71,8 +71,11 @@ block content
                 //-outcome: if no chatname, shows 'this is the chat' very briefly then chatUsersNamesArray as pageOnload in chatPageJs & get('/:chatid') in chatsJs
             
             .mainContentContainer 
-                .chatContainer 
-                    .chatMessages
+                .loadingSpinnerContainer 
+                    img(src='/images/loadingSpinner.gif',alt='Loading spinner')
+                .chatContainer(styles="visibility:hidden") 
+                    //- css style visibility for loadingSPinner
+                    ul.chatMessages
 
                     .footer 
                         textarea.inputTextbox(name="messageinput", placeholder='Type a messsage...')

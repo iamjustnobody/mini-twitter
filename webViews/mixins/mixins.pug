@@ -160,7 +160,7 @@ mixin createChatImage(chatData,userLoggedIn)
 
             img(src=`${user.profilePic}`,alt="User's profile picture", title=`{user.fName}`)
             //- img(src=user.profilePic,alt="User's profile picture", title=user.fName)
-            //- users being populated by get('/:chatid') from non-api-messageRoutesJs
+            //- users being populated by get('/messages/:chatid') from non-api-messageRoutesJs
             - i++
 
 mixin createChatNameModal(chat)

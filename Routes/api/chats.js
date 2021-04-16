@@ -7,8 +7,9 @@ const Chat=require('../../ModelSchema/ChatSchema') //Routes/api->Routes  directo
 // add router.use(express.json()) => req.body is {} & Users param not sent with request
 router.use(express.urlencoded({extended:false})); //POST/put/patch
 
-const middleware=require('../../middleware')
-router.use(middleware.requireLogin)
+//const middleware=require('../../middleware'); router.use(middleware.requireLogin) //opt //better to have
+
+const mongoose=require('mongoose')
 
 router.post('/',async(req,res,next)=>{ //console.log("req.body chats",req.body) //called by clicking createChat Button @newMessageJs after searching & selecting otherUsers forChat
     if(!req.body.users){ //{users:JSON.stringify(selectedUsers)} from ajax call
@@ -39,9 +40,18 @@ router.post('/',async(req,res,next)=>{ //console.log("req.body chats",req.body) 
 
 router.get('/',async(req,res,next)=>{ 
     Chat.find({users:{$elemMatch:{$eq:req.session.user._id}}}) //element -> item in the array
+    //._id (string) ok .id not ok; or just sessionUser OK//mongoose.types.objid(sessionUser.id)  not ok
+    ////mongoose.types.objid(sessionUser._id) ok //mongoose.types.objid(sessionUser) wrong a single String of 12 bytes or 24 chars
+    //{$eq:`${req.session.user}`} CastError: Cast to ObjectId failed for value "[object Object]" at path "users" for model "Chat"
+    //{$eq:`${req.session.user._id}`} ok 
+    //$eq:mongoose.Types.ObjectId(`${req.session.user._id}`) ok //$eq:`${mongoose.Types.ObjectId(req.session.user._id)}` ok too
     .populate("users")
+    .populate('latestMessage')
     .sort({updatedAt:-1}) // 'asc' "desc"
-    .then(chats=>res.status(200).send(chats)) //return opt
+    .then(async chats=>{
+        chats=await User.populate(chats,{path:'latestMessage.sender'})
+        res.status(200).send(chats) //return opt
+    }) 
     .catch(error=>{console.log(error);res.sendStatus(400)})
 })
 
@@ -77,13 +87,19 @@ router.put('/:chatid',async(req,res,next)=>{ //called by $('#chatNameButton').cl
 */
 
 
+
 //similar to router.get('/:chatid') from messagesRoutesJs w different purposes (base/foundation; html el; does all the checkings) ->pug ->js
 //base page onload script chatPageJs (the below fn initiated by setting default chatname )
 //applies same logic of setting default chatname from inboxJs to chatPageJs; could use same method in get('/:chatid') from messagesRoutes &payload.defaultchatname (may not need get('/:chatid') here in chatsJs)
 //or use same solution in here chatsJs get(/:chatid) (not in messageRoutesJs which remains as it is now)
 router.get('/:chatid',async(req,res,next)=>{ //find return array (even there's only one el) 
-    Chat.findOne({_id:req.params.chatid,users:{$elemMatch:{$eq:req.session.user._id}}}) 
-    //_id or id //req.params.chatid or Object.assign or mongoose.types.objId or `${req.params.chatid}`
+    Chat.findOne({_id:req.params.chatid,users:{$elemMatch:{$eq:req.session.user}}}) 
+    //??//_id (correct) or id (incorrect) 
+    //req.params.chatid ok; or mongoose.types.objId(req.parems.chatid) ok; or `${req.params.chatid}` ok
+    //Object.assign({},xxx) or Object.assign({},mongoose.Types.ObjectId(xxx)) argument must be a single string of 12bytes or 24 hex chars; xx could be params-chatid or sessionUser
+    //or req.session.user._id or just req.session.user //both ok but not .id
+    //mongoose.Types.ObjectId(req.session.user) wrong as argument must be a single String of 12 bytes or 24 hex characters
+     //mongoose.Types.ObjectId(req.session.user._id) //ok
     .populate("users")
     .then(chat=>res.status(200).send(chat)) //return opt
     /*.then(chat=>{ //chat is mongodbDocObj
@@ -113,6 +129,38 @@ router.get('/:chatid',async(req,res,next)=>{ //find return array (even there's o
     }) */
     .catch(error=>{console.log(error);res.sendStatus(400)})
 })
+
+
+const Message=require('../../ModelSchema/MessageSchema')
+router.get('/:chatid/messages',async(req,res,next)=>{ //find return array (even there's only one el) 
+    Message.find({chat:req.params.chatid})
+        .populate('sender')
+        .populate("chat")
+        .then(async chatMessages=>{
+            //var chatMsgArrayObj=await chatMessages.map(async eachChatMsg=>{return await User.populate(eachChatMsg,{path:'chat.users'})}) //router.get('/:chatid') populate("users")
+            //or async eachChatMsg=>await User.populate(eachChatMsg,{path:'chat.users'})
+            //res.status(200).send(chatMsgArrayObj) 
+            //await chatMessages.forEach(async eachChatMsg=>{eachChatMsg=await User.populate(eachChatMsg,{path:'chat.users'})}) //router.get('/:chatid') populate("users")
+            //res.status(200).send(chatMessages) //return opt; better return if returned value will be used in next thens(or catch) or if no returnedVal to be used but if there's promise that need tobe waited
+            //the above two ways not working
+            var chatMsgArrayObj=await Promise.all(chatMessages.map(async eachChatMsg=>{
+                 //const newEl= await User.populate(eachChatMsg,{path:'chat.users'});console.log('newEl',newEl.chat.users);return newEl; //1a //ok
+                 return await User.populate(eachChatMsg,{path:'chat.users'})
+                })) //1b //router.get('/:chatid') populate("users") 
+            //var chatMsgArrayObj=await Promise.all(chatMessages.map(async eachChatMsg=> await User.populate(eachChatMsg,{path:'chat.users'}))) //1c//ok
+            //return chatMsgArrayObj //2b or re-write to return await Promise.all//returned value used to next then; if not going to be used, but if asyncPromise inside then & if wanna wait promise, REturn asyncPromise
+            console.log('pop',chatMsgArrayObj[0].chat.users)//array //2a
+             res.status(200).send(chatMsgArrayObj) //2a
+            /* await Promise.all(chatMessages.forEach(async eachChatMsg=>{eachChatMsg=await User.populate(eachChatMsg,{path:'chat.users'})})) //router.get('/:chatid') populate("users")
+             console.log('pop',chatMessages[0].chat.users)
+             res.status(200).send(chatMessages) //return opt
+             *///this above one not working
+        })
+        //.then((chatMsgArrayObj)=>{console.log('pop',chatMsgArrayObj[0].chat.users);res.status(200).send(chatMsgArrayObj)}) //return opt //2b
+        .catch(error=>{console.log(error);res.sendStatus(400)}) ////return opt
+}) //could then populate chat & chat.users, to replace router.get('/:chatid) above? & thus removing $.get(`/api/chats/${chatID}`) & just using $.get(`/api/chats/${chatID}/messages`) @chatPage.js documentReady
+//as all chats presented ('/api/chats' GET)have req.session.user involved; so chat def has users incl el $eq req.session.user
+
 
 function getOtherChatUsersNamesString(users,self){
     var otherChatUsers=getOtherChatUsers(users,self);
