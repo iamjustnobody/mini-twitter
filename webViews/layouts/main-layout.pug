@@ -18,7 +18,10 @@ html(lang="en")
     body
         //-body.testLoginUser(data-currentUser=userLoggedIn) 
             //- `${userLoggedInJs}` or  =userLoggedInJs or =userLoggedIn
-          
+        script. 
+            var userLoggedInJs_base=!{userLoggedInJs || userLoggedInJs_post || userLoggedInJs_profile || userLoggedInJs_inbox || userLoggedInJs_newMsg || userLoggedInJs_chat ||userLoggedInJs_search}  
+            //- incorrect var userLoggedInJs_base=!{userLoggedInJs} || !{userLoggedInJs_post} || !{userLoggedInJs_profile} || !{userLoggedInJs_inbox} || !{userLoggedInJs_newMsg} || !{userLoggedInJs_chat} ||!{userLoggedInJs_search}  
+            //- alternatively adding userLoggedInJs_base field to non-apiRoutes' payloads that'd be used in corresponding pugs
         //-script. 
             var userLoggedInJs=!{userLoggedInJs}
             //-var userLoggedInJs=!{userLoggedInJs} //obj open@homePage (log@commonJs/homeJs)//[object Object] string open@profilePage (log@common/profilePageJs)
@@ -78,10 +81,15 @@ html(lang="en")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-alpha.1/cropper.min.js")
         //-or put just on profilePage // but if tweet with image then needs to be here @main-layouts
 
+        script(src='https://cdn.socket.io/3.1.3/socket.io.min.js')
+        //-https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.3/socket.io.min.js
+
+
         block scripts 
         //-ok
 
         script(src='/js/common.js')
+        script(src='/js/clientSocket.js')
 
         //-block scripts 
         //-ok too depending on const userLoggedInJs=xx defined in common.js or homeJs

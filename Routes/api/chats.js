@@ -149,7 +149,8 @@ router.get('/:chatid/messages',async(req,res,next)=>{ //find return array (even 
                 })) //1b //router.get('/:chatid') populate("users") 
             //var chatMsgArrayObj=await Promise.all(chatMessages.map(async eachChatMsg=> await User.populate(eachChatMsg,{path:'chat.users'}))) //1c//ok
             //return chatMsgArrayObj //2b or re-write to return await Promise.all//returned value used to next then; if not going to be used, but if asyncPromise inside then & if wanna wait promise, REturn asyncPromise
-            console.log('pop',chatMsgArrayObj[0].chat.users)//array //2a
+            console.log(typeof chatMsgArrayObj,typeof chatMsgArrayObj[0])//obj undefined (if new chat)//or obj obj if there are messages in this chat
+            if(chatMsgArrayObj[0]!=undefined){console.log('pop',chatMsgArrayObj[0].chat.users)}//array //2a
              res.status(200).send(chatMsgArrayObj) //2a
             /* await Promise.all(chatMessages.forEach(async eachChatMsg=>{eachChatMsg=await User.populate(eachChatMsg,{path:'chat.users'})})) //router.get('/:chatid') populate("users")
              console.log('pop',chatMessages[0].chat.users)

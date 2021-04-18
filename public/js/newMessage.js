@@ -12,9 +12,9 @@ $('#userSearchTextbox').keydown((event)=>{ //$(userSearchTextbox).keydown((event
 
     if(value==""&&(event.which==8||event.keyCode==8)){
         //remove user from selection 
-        selectedUsers.pop() //1
+        selectedUsers.pop() 
         updateSelectedUsersHtml() //ok 1
-     //   deleteSelectedUserHtmlOneByOne(); //ok too 2
+        //deleteSelectedUserHtmlOneByOne(); //ok too 2
         //also remove all searchItems displayed on the output list
         $(".resultsContainer").html('')
         //createChat btn disabled when no user selected in the input box/search field i.e. no one in the selectedUsers array
@@ -79,7 +79,7 @@ function outputSelectableUsers4Chats(getUsersData,container){
 
 function userSelected(user){
     //add selected user from teh display/output list to the selectedUsers array of returned mongoDB doc Obj
-    selectedUsers.push(user) //1
+    selectedUsers.push(user)
     //add all selected users to the inputbox/search field
      updateSelectedUsersHtml() //ok 1
     // addSelectedUserHtmlOneByOne(user) //ok too 2
@@ -109,22 +109,52 @@ function updateSelectedUsersHtml(){ //create userElement  to be added to the inp
     //adn then add above elements to/b4 #selectedUsers
     $("#selectedUsers").prepend(elements)
 }
+//var lastUserHtmlStrEl=""
 function addSelectedUserHtmlOneByOne(user){
         var name =user.fName+" "+user.lName //or using backtick injection
-        var userElement=$(`<span class='selectedUser'>${name}</span>`)
+        var curUserHtmlStrEl=`<span class='selectedUser'>${name}</span>`
+        var userElement=$(curUserHtmlStrEl)
         console.log(selectedUsers.length)
-        //$("#selectedUsers").prepend(userElement)
-        $("#selectedUsers>:last").before(userElement) //ok
-       //$("#selectedUsers :last").before(userElement) //ok
-       //$("#selectedUsers").children().last().before(userElement) //ok
-       //$("#selectedUsers :last-child").before(userElement) //ok
+        //$("#selectedUsers").prepend(curUserHtmlStrEl)//$("#selectedUsers").prepend(userElement) //reverse order - not we want here
+        $("#selectedUsers>:last").before(curUserHtmlStrEl)// $("#selectedUsers>:last").before(userElement) //bothok
+       //$("#selectedUsers :last").before(curUserHtmlStrEl)//$("#selectedUsers :last").before(userElement) //both ok
+       //$("#selectedUsers").children().last().before(curUserHtmlStrEl) //$("#selectedUsers").children().last().before(userElement) //both ok
+       //$("#selectedUsers :last-child").before(curUserHtmlStrEl)//$("#selectedUsers :last-child").before(userElement) //both ok
+       
        //$("#selectedUsers span:last-child").after(userElement) //not ok here as initially no span 
       // $("#selectedUsers span:last").after(userElement) //not ok here as initially no span 
        //$("#selectedUsers .selectedUser").last().after(userElement) //not ok here as initially no '.selectedUser'
       // $(".selectedUser :last-of-type").after(userElement) //not ok here as initially no '.selectedUser'
       // $("#selectedUsers").children(".selectedUser").last().after(userElement) //not ok here as initially no '.selectedUser'
-        //create another container just for these elements
+      //$("#userSearchTextbox").before(curUserHtmlStrEl)//$("#userSearchTextbox").before(userElement) // bothOK
+      //userElement.insertBefore($("#userSearchTextbox")) //userElement.insertBefore("#userSearchTextbox") //both ok
+      //curUserHtmlStrEl.insertBefore($("#userSearchTextbox")) //curUserHtmlStrEl.insertBefore("#userSearchTextbox") //neither ok
+      
+      //create another container just for these span / .selectedUser elements so append can be applied
+        //if(lastUserHtmlStrEl==''||lastUserHtmlStrEl.length==0) $("#selectedUsers").prepend(userElement) //if revert process; add-delete-add again lastUserHtmlStrEl is not empty
+      //  if(selectedUsers.length==1) $("#selectedUsers").prepend(userElement)
+       // else  curUserHtmlStrEl.insertAfter(lastUserHtmlStrEl)//.insertAfter($(lastUserHtmlStrEl))//.insertAfter($("span"))//.insertAfter($(".selectedUser"))//wrong not a function
+      //else userElement.insertAfter($(".selectedUser")) //userElement.insertAfter($("span")) //none working
+      //else curUserHtmlStrEl.insertAfter(".selectedUser") //curUserHtmlStrEl.insertAfter("span") //none working as curUserHtmlStrEl. is not a fn
+      //  else userElement.insertAfter("span") //userElement.insertAfter(".selectedUser") //left-all OK
+      //  else userElement.insertAfter($(lastUserHtmlStrEl)) //userElement.insertAfter(lastUserHtmlStrEl) //$(lastUserHtmlStrEl).after(userElement) 
+      //above line not working
+      //else $("#selectedUsers span:last-child").after(userElement)  //after(curUserHtmlStrEl) //span not having child
+      //else $("#selectedUsers span:last").after(curUserHtmlStrEl) //else $("#selectedUsers span:last").after(userElement) //both ok
+     // else userElement.insertAfter($("#selectedUsers span:last")) //ok
+      // else $("#selectedUsers .selectedUser").last().after(curUserHtmlStrEl)  //$("#selectedUsers .selectedUser").last().after(userElement) //both ok
+      //else userElement.insertAfter($("#selectedUsers .selectedUser").last()) //ok
+      //else $(".selectedUser:last-of-type").after(curUserHtmlStrEl)//$(".selectedUser:last-of-type").after(userElement) //both ok 
+      //else userElement.insertAfter($(".selectedUser:last-of-type"))//ok
+      //else $(".selectedUser :last-of-type").after(curUserHtmlStrEl)//$(".selectedUser :last-of-type").after(userElement) //neither works
+      //else $("#selectedUsers").children(".selectedUser").last().after(curUserHtmlStrEl) //$("#selectedUsers").children(".selectedUser").last().after(userElement) //both ok
+      //else userElement.insertAfter($("#selectedUsers").children(".selectedUser").last())//ok
+
+        //console.log("last",lastUserHtmlStrEl,"current",curUserHtmlStrEl)
+       // lastUserHtmlStrEl=curUserHtmlStrEl 
+        //$(lastUserHtmlStrEl)=userElement //incorrect
 }
+//var lastUserElement=$(lastUserHtmlStrEl)
 function deleteSelectedUserHtmlOneByOne(){
     $("#selectedUsers").children().last().prev().remove() //ok
     //$("#selectedUsers :nth-last-child(2)").remove() //OK
@@ -139,6 +169,9 @@ function deleteSelectedUserHtmlOneByOne(){
     //$("#userSearchTextbox").prev('.selectedUser').remove() //ok
     //$("#userSearchTextbox").prev('span').remove()//ok same as above
     //remove #selectedUsers' last child or remove teh el closest to usersearchtextbox //slow pointer as records
+    //var tempUserElement=$(lastUserHtmlStrEl).prev(); $(lastUserHtmlStrEl).remove(); //not quite right
+    //var tempUserElement=lastUserElement.prev(); lastUserElement.remove();lastUserElement=tempUserElement //not right
+
 }
 
 

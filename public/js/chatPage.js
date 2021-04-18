@@ -15,6 +15,10 @@ console.log(document.querySelector('.test').dataset.id4,typeof document.querySel
 
 
 $("document").ready(()=>{
+
+    socket.emit("join room",chatID) //emit an event to the server
+    socket.on("typing",()=>$('.typingDots').show()) //server app.js emit typing event
+    socket.on("stop typing",()=>{$('.typingDots').hide();console.log('is typing')}) //server app.js emit typing event
     
     $.get(`/api/chats/${chatID}`,(chatData)=>{ console.log(chatData)
         $("#chatName").text(chatData.chatName?chatData.chatName:getOtherChatUsersNamesString(chatData.users))
@@ -35,7 +39,7 @@ $("document").ready(()=>{
 
     //OUTPUT ALL CHAT_CONTETN/CHAT_MESSAGES IN THIS CHAT
     $.get(`/api/chats/${chatID}/messages`,(chatMsg)=>{ 
-        console.log('all messages for this chat',chatMsg,typeof chatMsg) //arrayObj
+        console.log('all messages for this chat',chatMsg,typeof chatMsg) //arrayObj - could be length of 0 if new chat
         //$("#chatName").text(chatMsg[0].chat.chatName?chatMsg[0].chat.chatName:getOtherChatUsersNamesString(chatMsg[0].chat.users)) //OK
         //populate users in router.get('/:chatid/messages') at chats.js so above $.get(`/api/chats/${chatID}` can be removed
 
@@ -104,8 +108,8 @@ function createAdvancedMessageHtml(message,nextMessage,lastSenderId){
     var nameElement=""
     if(isFirst){
         liClassName+=' first'
-        if(isMine){
-            nameElement=`<span class='senderName'>${senderName}</span>`
+        if(!isMine){
+            nameElement=`<span class='senderName'>${curSenderName}</span>`
         }
     }
 
@@ -121,7 +125,7 @@ function createAdvancedMessageHtml(message,nextMessage,lastSenderId){
         imageContainer=`<div class='imageContainer'>
                             ${profileImage}
                         </div>`
-     }
+     } //as only as its not my msg, even if its not the last msg we'll keep imageContainer space
 
     
     return `<li class='message ${liClassName}'>
@@ -184,16 +188,45 @@ $('.sendMessageButton').click(()=>{
     messageSubmitted()
 })
 $('.inputTextbox').keydown((event)=>{
+
+    updateTyping();
+
     if(event.which===13 && !event.shiftKey){
         messageSubmitted() //enter key for submission
         return false //prevent entering new line
     }
 })
+var typing=false;
+var lastTypingTime;
+function updateTyping(){
+    if(!connected){return}
+    //below for keydown - going to type
+    if(!typing){
+        typing=true;
+        socket.emit('typing',chatID) //to server app.js
+    }
+    
+    //below is like alread typed & done typing; keyUp when/if(typing===true)
+    lastTypingTime=new Date().getTime()
+    var timeLength=3000
+    setTimeout(()=>{
+        var timeDiff=new Date().getTime()-lastTypingTime
+        if(timeDiff>=timeLength && typing){
+            //for serial chars typing in, prev cb maynot execute as newTime (later's Data.now()) makes timeDiff<timeLength; 
+            //later cb's typing may be false as prev's typing is set to false in prev's cb fn; so later's cb may not need to execute
+            socket.emit('stop typing',chatID) //to server appjs
+            typing=false
+        }
+    },timeLength)
+}
+
 function messageSubmitted(){
     var content=$('.inputTextbox').val().trim();
     if(content!=""){
         sendMessage(content)
         $('.inputTextbox').val("")
+        socket.emit('stop typing',chatID) //to server appjs
+        typing=false
     }
 
 }
@@ -212,6 +245,20 @@ function sendMessage(content){
         //populated sender & chat from messagesJs apiRoute; consistent with ouputChatMessages populated by GET('/api/chats/:chatid/messages')from chats.js
         addChatMessageHtml(newMsg)
 
+        console.log('new message sent back to backend server appJs', newMsg.chat,newMsg.chat.users) 
+        // if chat.users not populated//{users:["x","y"],_id:"z",lastMessage:"u",updatedAt:"time"} //["x","y"]
+        //if chat.users populated: obj {_id:"x",isgroup:true,updatedAt:"time",users:[{obj see below}]}
+        //if chat.users populated: ArrayObj [{_id:"x",createdAt:"time",likes:["id1","id2"]},{see left}]
+        console.log(typeof newMsg.chat,typeof newMsg.chat.users) //obj; arrayObj of string b4 populated //obj;arrayObj of oBj after populated
+        console.log('chatid',newMsg.chat._id,typeof newMsg.chat._id,newMsg.chat.id,typeof newMsg.chat.id) //z string undefined undefined
+        console.log('userobj',newMsg.chat.users[0],typeof newMsg.chat.users[0]) //x or y string b4 populated
+        //{_id:"x",createdAt:"time",likes:["id1","id2"]} obj after chat.users being populated
+        console.log('userid',newMsg.chat.users[0]._id,typeof newMsg.chat.users[0]._id,newMsg.chat.users[0].id,typeof newMsg.chat.users[0].id) //all4undefined
+        ////z string undefined undefined after chat.users populated
+        console.log('senderobj',newMsg.sender,typeof newMsg.sender) //{_id:"x",createdAt:"time",likes:["id1","id2"]} obj //sender's being populated
+        console.log('senderid',newMsg.sender._id,typeof newMsg.sender._id,newMsg.sender.id,typeof newMsg.sender.id)//z string undefined undefined 
+        //see difference in consol o/p of newMsg in messagesJs chatPageJs appJs
+        if(connected) socket.emit('new message',newMsg)
     })
 }
 
@@ -228,7 +275,7 @@ function addChatMessageHtml(message){
 
 function createMessageHtml(message){
 
-    var isMine=message.sender._id==userLoggedInJs._id //message.sender is just string so need to be populated
+    var isMine=message.sender._id==userLoggedInJs._id //message.sender is just string so need to be populated@messages.js
     var liClassName=isMine?"mine":"theirs"
     //<li class='message ${liClassName}'> //<li class=${liClassName}> //<li class=${isMine?"mine":"theirs"}>
     ////populated sender & chat from messagesJs apiRoute //consistent w ouputChatMessages populated by GET('/api/chats/:chatid/messages')from chats.js

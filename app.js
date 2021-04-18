@@ -12,7 +12,11 @@ mongoose.connect("mongodb+srv://TwitterCloneClusterDBsAdminUsers:TwitterCloneClu
 */ //move to seperate file class
 const mongoose=require('./database')
 
+
 const server=app.listen(port,()=>{console.log("server listenning on port"+port)})
+
+const io=require('socket.io')(server,{pingTimeout:60000})
+//create instance; {options}
 
 
 const path=require('path');
@@ -95,3 +99,50 @@ console.log("stringified user",stringify,typeof stringify);//string
     //payload & res.locals used in rendered 'home' page/pug
     res.status(200).render('home',payload) //base pug/page for ajax call post.js APIs & home.js (loading page) & using common.js for btn click/sbm
 })
+
+
+io.on('connection',(clientsocket)=>{ //cb fn
+    clientsocket.on("setup",userData=>{ //receive 'setup' event from frontend clientSocket.js
+        console.log(userData._id,typeof userData,typeof userData._id,typeof userData.id) //obj string undefined
+        clientsocket.join(userData._id) //user id;user joins user's own room where user will already be part of
+        clientsocket.emit("connected")//send events or emit things; emit events to these rooms then everyone joins this room receives notification
+        //send/emit evnet back to clientSocket.js
+    })
+    //clientsocket.on("join room",chatRoom=> return socket.join(chatRoom)) //from frontend chatPage.js ducment ready
+    clientsocket.on("join room",chatRoom=> clientsocket.join(chatRoom)) //join new room when user's on chatpage
+    //clientsocket.on("join room",chatRoom=> {socket.join(chatRoom)})
+    //clientsocket.on("join room",chatRoom=> {socket.join(chatRoom);return})
+
+    clientsocket.on("typing",chatRoom=> clientsocket.in(chatRoom).emit("typing")) //when user's typing in the chatroom
+    //received from $('.inputTextbox').keydown updateTyping from chatPage.js & send back to chatPage.js onDocumentReady
+    clientsocket.on("stop typing",chatRoom=> clientsocket.in(chatRoom).emit("stop typing")) //when user stops typing in the chatroom
+    
+    clientsocket.on("new message",newMsg=> {
+        console.log('new message sent back from frontend chatPageJs', newMsg.chat,newMsg.chat.users) 
+        //{users:['x','y'],_id:'z',lastMessage:'u'} when chat.users not populated
+        //when chat.users populated {users:[{see bwlow},{see below}],_id:'z',lastMessage:'u'}
+        //or {_id:'jj',updatedAt:'time',isgroup:true,a:'',users:[{a:'x',b:[],c:[Array],_id:'zz',updatedAt:'tt'},{}]}
+        //when chat.users populated: [{a:'x',_id:'y',b:['z','zb'],updatedAt:'t'},{see left}] or //[{a:'x',b:['cc','dd'],f:[],createdAt:'t',_id:'6fb'},{}] arrayobj of obj
+        console.log(typeof newMsg.chat,typeof newMsg.chat.users) //obj; arrayObj of string ['x','y'] when chat.users not populated
+        //when chat.users populated: obj,arrayObj of obj
+        console.log('chatid',newMsg.chat._id,typeof newMsg.chat._id,newMsg.chat.id,typeof newMsg.chat.id) //z string undefined undefined
+        console.log('userobj',newMsg.chat.users[0],typeof newMsg.chat.users[0]) //x or y string when chat.users not populated
+        //when chat.users populated, {a:'x',_id:'y',b:['z','zb'],updatedAt:'t',f:[]} obj
+        console.log('userid',newMsg.chat.users[0]._id,typeof newMsg.chat.users[0]._id,newMsg.chat.users[0].id,typeof newMsg.chat.users[0].id) 
+        //all4undefined when chat.users not populated//y string undefined undefined when chat.users populated
+        
+        console.log('senderobj',newMsg.sender,typeof newMsg.sender) //sender populated {a:'x',b:['y','z'],c:[],_id:'666fb',updatedAt:'A'} obj
+        console.log('senderid',newMsg.sender._id,typeof newMsg.sender._id,newMsg.sender.id,typeof newMsg.sender.id) ///666fb string undefined undefined
+        //see difference in consol o/p of newMsg in messagesJs chatPageJs appJs
+        var chat=newMsg.chat
+        if(!chat.users) return console.log('Chat.users not defined/populated')
+        chat.users.forEach(user=>{
+            if(user._id==newMsg.sender._id) return 
+            //self'msg already as htmlelement appended/added onto the chat page
+            clientsocket.in(user._id).emit("message received",newMsg) 
+            //self's msg (htmlElement) also shows in or added onto other users' chat page immediately
+            //details in performing 'message received' action in common clientSocketJs
+        })
+    })
+})
+//server: installed & set up //client: make connections to soket io

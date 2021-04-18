@@ -513,7 +513,8 @@ function createPostHtml(postData,largeFont=false){
     if(postData._id=='6071d280d69e9012686a84b9'){console.log("why")}
     var replyFlag=""
     //postData.commentedPost is Not null or undefined even if postData.commentedPost is not populated as postData.commentedPost is mongoObjId
-    //but postData.commentedPost._id is undefined (also postData.commentedPost.postedBy) if postData.commentedPost not populated
+    //but postData.commentedPost._id is undefined (also postData.commentedPost.postedBy) if postData.commentedPost not populated 
+    //[UNLIKE BACKEND WHERE UNPOPULATED OBJ STILL HAS ._id (obj) (&.id (string)) fields] SEE SOCKET IO newMsg in messagesJs chatPageJs appJs
     // if(postData.commentedPost){alert(postData.commentedPost);alert(typeof postData.commentedPost)}
 //  if(postData.commentedPost){  //firstly making sure there's replyTo/commentedPost field - this is the new post that responde to other post (commentedPost); 
         //not normal newpost that .commentedPost is undefined

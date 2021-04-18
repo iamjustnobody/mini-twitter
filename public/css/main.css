@@ -19,6 +19,7 @@ html,body{
     background-color: #fff;
     font-weight:300
 }
+ul{margin:0} /*browser 241*/
 .wrapper{
     display: flex;
     flex-direction: column;
@@ -604,8 +605,10 @@ button span{
     display: flex;
     align-items: flex-end; /*push down to bottom*/
     flex-shrink:0;
-    -webkit-flex:0; /*fix unscrolling, overlap, squashed on top of each other issue*/
+   /* -webkit-flex:0; *//*fix unscrolling, overlap, squashed on top of each other issue*/
+   /*removed as 241 */
 }
+.typingDots img,
 .chatMessages .message .messageBody {
     background-color: #f1f0f0;
     padding: 6px 12px;
@@ -688,4 +691,15 @@ button span{
 .loadingSpinnerContainer img{
     width: 50%;
     max-width: 75px;
+}
+
+.typingDots img{
+    /*on top of base css above (with message messagesBody*/
+    height:35px;
+}
+.typingDots{
+    /*padding: 0 var(--spacing);*/
+    padding: var(--spacing);
+    padding-bottom: 0;
+    display: none;
 }
