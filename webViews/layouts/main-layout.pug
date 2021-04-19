@@ -19,7 +19,7 @@ html(lang="en")
         //-body.testLoginUser(data-currentUser=userLoggedIn) 
             //- `${userLoggedInJs}` or  =userLoggedInJs or =userLoggedIn
         script. 
-            var userLoggedInJs_base=!{userLoggedInJs || userLoggedInJs_post || userLoggedInJs_profile || userLoggedInJs_inbox || userLoggedInJs_newMsg || userLoggedInJs_chat ||userLoggedInJs_search}  
+            var userLoggedInJs_base=!{userLoggedInJs || userLoggedInJs_post || userLoggedInJs_profile || userLoggedInJs_inbox || userLoggedInJs_newMsg || userLoggedInJs_chat ||userLoggedInJs_search || userLoggedInJs_notification}  
             //- incorrect var userLoggedInJs_base=!{userLoggedInJs} || !{userLoggedInJs_post} || !{userLoggedInJs_profile} || !{userLoggedInJs_inbox} || !{userLoggedInJs_newMsg} || !{userLoggedInJs_chat} ||!{userLoggedInJs_search}  
             //- alternatively adding userLoggedInJs_base field to non-apiRoutes' payloads that'd be used in corresponding pugs
         //-script. 
@@ -48,7 +48,7 @@ html(lang="en")
                         i.fas.fa-home
                     a(href='/search')
                         i.fas.fa-search
-                    a(href='/notifications')
+                    a(href='/notification')
                         i.fas.fa-bell
                     a(href='/messages')
                         i.fas.fa-envelope

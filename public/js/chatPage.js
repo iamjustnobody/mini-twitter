@@ -243,8 +243,8 @@ function sendMessage(content){
         //but when create a new chat mongodb does not show the fields thatare not defined or specified in chatData when create/POST @chatsJs apiRoutes
         
         //populated sender & chat from messagesJs apiRoute; consistent with ouputChatMessages populated by GET('/api/chats/:chatid/messages')from chats.js
-        addChatMessageHtml(newMsg)
-
+        addChatMessageHtml(newMsg) //for self seeing my own newMsg thats just sent
+        /*
         console.log('new message sent back to backend server appJs', newMsg.chat,newMsg.chat.users) 
         // if chat.users not populated//{users:["x","y"],_id:"z",lastMessage:"u",updatedAt:"time"} //["x","y"]
         //if chat.users populated: obj {_id:"x",isgroup:true,updatedAt:"time",users:[{obj see below}]}
@@ -258,7 +258,8 @@ function sendMessage(content){
         console.log('senderobj',newMsg.sender,typeof newMsg.sender) //{_id:"x",createdAt:"time",likes:["id1","id2"]} obj //sender's being populated
         console.log('senderid',newMsg.sender._id,typeof newMsg.sender._id,newMsg.sender.id,typeof newMsg.sender.id)//z string undefined undefined 
         //see difference in consol o/p of newMsg in messagesJs chatPageJs appJs
-        if(connected) socket.emit('new message',newMsg)
+        */
+        if(connected) socket.emit('new message',newMsg) //for others seeing my newMsg thats just sent
     })
 }
 

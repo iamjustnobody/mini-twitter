@@ -85,8 +85,16 @@ $('#submitPostButton,#submitReplyButton').click(event=>{
     //    console.log(postData) //postData=populated newPost sent back by posts.js post '/'
     //or postData=populated new comment Post
     console.log('newPostData.id',postData.id,typeof postData.id,'newPostData._id',postData._id,typeof postData._id)
- //undefined undefined//string
-    if(postData.commentedPost){location.reload()} //for submitting comments
+ //undefined undefined//string  //its like newPost/postData (Obj) being populated
+ 
+ if(postData.commentedPost){
+    console.log('newPostcommentedPost frontend',postData.commentedPost,postData.commentedPost._id,postData.commentedPost.id)
+    console.log(typeof postData.commentedPost,typeof postData.commentedPost._id,typeof postData.commentedPost.id) 
+    console.log('newPostcommentter frontend',postData.commentedPost.postedBy,postData.commentedPost.postedBy_id,postData.commentedPost.postedBy.id) 
+    console.log(typeof postData.commentedPost.postedBy,typeof postData.commentedPost.postedBy_id,typeof postData.commentedPost.postedBy.id) 
+} //.commentedPost populated in the backend (but no fields of commentedPost being populated) - obj string undefined
+//  .commentedPos.postedBy not being populated on server - string undefined undefined
+  if(postData.commentedPost){location.reload()} //for submitting comments
         //reload the page '/'getAllPosts home.js //modal gone when reflesh page
         //below for submitting normal post -> not reflesh page just append instead
         var htmlEl=createPostHtml(postData)
@@ -217,10 +225,13 @@ $(document).on('click','.post',(event)=>{
 })
 
 
-//below one could be in profilePage.js
+//below one could be in profilePage.js & searchPage.Js
 $(document).on('click','.followButton',(event)=>{ //css class of followButton
     var button=$(event.target);
     var profileUserId=button.data().userid;
+    //data-userid='${userData._id}'in searchJs createUserHtml (appended to .resultsContainer); f&F pug only has .resultsContainer 
+    //data-userid=`${user._id}` in mixin.pug createFollowButton(user,isFollowing) used in profilePage.pug
+    //making sure above two have same naem for datset
     console.log("profileUserId",profileUserId,typeof profileUserId)
 
     $.ajax({

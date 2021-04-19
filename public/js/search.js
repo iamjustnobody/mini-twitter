@@ -73,12 +73,13 @@ function createUserHtml(userData,showFollowButton){ //no show followBtn for grou
     var followButton=""
     if(showFollowButton && userLoggedInJs._id != userData._id){
         followButton = `<div class='followBtnContainer'> 
-                            <button class='${buttonClass}' data-user='${userData._id}'>${text}</button>
+                            <button class='${buttonClass}' data-userid='${userData._id}'>${text}</button>
                         </div>`
                         
     }
-//data-user='${userData._id}' or data-user=userData._id //ok //class='${buttonClass}' or class=buttonClass
-//just like createFollowButon in mixin.pug
+//data-user='${userData._id}' or data-user=userData._id //ok //class='${buttonClass}' or class=buttonClass //createdUserHtml added to f&F.pug .resultsContainer
+//just like createFollowButon in mixin.pug which is used in profilePage.pug 
+//click follow/unfollow button even handler is in commonJs so need f&f.pug & profillePage.pug use same name for dataset (data-userid)
 
     return `<div class="user">
                 <div class='userImageContainer'>

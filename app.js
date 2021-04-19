@@ -53,6 +53,8 @@ const profileRoute=require('./Routes/profileRoutes');
 const uploadRoute=require('./Routes/uploadRoutes');
 const searchRoute=require('./Routes/searchRoutes');
 const messagesRoute=require('./Routes/messagesRoutes');
+const notificationRoute=require('./Routes/notificationRoutes');
+
 
 //api routes
 const postsApiRoute=require('./Routes/api/posts');
@@ -60,6 +62,8 @@ const { type } = require('os');
 const usersApiRoute=require('./Routes/api/users');
 const chatsApiRoute=require('./Routes/api/chats');
 const messagesApiRoute=require('./Routes/api/messages');
+const notificationsApiRoute=require('./Routes/api/notifications');
+
 
 
 //app.use(middleware.requireLogin);
@@ -74,12 +78,14 @@ app.use("/profile",middleware.requireLogin,profileRoute)
 app.use("/uploads",uploadRoute) //"/uploads" part of filePath
 app.use("/search",searchRoute) 
 app.use("/messages",messagesRoute) 
+app.use("/notification",notificationRoute) 
 
 
 app.use("/api/posts",postsApiRoute)
 app.use("/api/users",usersApiRoute)
 app.use("/api/chats",chatsApiRoute)
 app.use("/api/messages",messagesApiRoute)
+app.use("/api/notifications",notificationsApiRoute)
 
 
 
@@ -87,9 +93,9 @@ app.use("/api/messages",messagesApiRoute)
 //app.route('/').get(middleware.requireLogin,(req,res,next)=>{ //restful - use '/' get cb -> in router & in app
 app.get('/',middleware.requireLogin,(req,res,next)=>{ 
 //res.status(200).send("hello")
-console.log("req.sessoin.user",req.session.user,typeof req.session.user); //obj
+console.log("req.sessoin.user",req.session.user,typeof req.session.user); //obj {a:'x',b:['y','z'],f:[],_id:'dd',createdAt:'tt'}
 var stringify=JSON.stringify(req.session.user)
-console.log("stringified user",stringify,typeof stringify);//string
+console.log("stringified user",stringify,typeof stringify);//string {"a":"x","b":["c","e"],"timeAt":"time","_id":"66fb"}
     var payload={
         pageTitle:'Home',
         userLoggedIn:req.session.user,  //for pug
@@ -103,7 +109,7 @@ console.log("stringified user",stringify,typeof stringify);//string
 
 io.on('connection',(clientsocket)=>{ //cb fn
     clientsocket.on("setup",userData=>{ //receive 'setup' event from frontend clientSocket.js
-        console.log(userData._id,typeof userData,typeof userData._id,typeof userData.id) //obj string undefined
+        console.log('socketio setup',userData._id,typeof userData,typeof userData._id,typeof userData.id) //objId/obj string undefined
         clientsocket.join(userData._id) //user id;user joins user's own room where user will already be part of
         clientsocket.emit("connected")//send events or emit things; emit events to these rooms then everyone joins this room receives notification
         //send/emit evnet back to clientSocket.js
@@ -118,6 +124,7 @@ io.on('connection',(clientsocket)=>{ //cb fn
     clientsocket.on("stop typing",chatRoom=> clientsocket.in(chatRoom).emit("stop typing")) //when user stops typing in the chatroom
     
     clientsocket.on("new message",newMsg=> {
+        /*
         console.log('new message sent back from frontend chatPageJs', newMsg.chat,newMsg.chat.users) 
         //{users:['x','y'],_id:'z',lastMessage:'u'} when chat.users not populated
         //when chat.users populated {users:[{see bwlow},{see below}],_id:'z',lastMessage:'u'}
@@ -134,6 +141,7 @@ io.on('connection',(clientsocket)=>{ //cb fn
         console.log('senderobj',newMsg.sender,typeof newMsg.sender) //sender populated {a:'x',b:['y','z'],c:[],_id:'666fb',updatedAt:'A'} obj
         console.log('senderid',newMsg.sender._id,typeof newMsg.sender._id,newMsg.sender.id,typeof newMsg.sender.id) ///666fb string undefined undefined
         //see difference in consol o/p of newMsg in messagesJs chatPageJs appJs
+        */
         var chat=newMsg.chat
         if(!chat.users) return console.log('Chat.users not defined/populated')
         chat.users.forEach(user=>{

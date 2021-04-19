@@ -2,11 +2,12 @@ const express=require('express');
 const router=express.Router();
 const User=require('../../ModelSchema/UserSchema') // Routes/api->Routes  directory->root directory
 const Post=require('../../ModelSchema/PostSchema') //Routes/api->Routes  directory->root directory
+const Notification=require('../../ModelSchema/NotificationSchema')
 
 
 router.put('/:userid/follow',async(req,res,next)=>{  //req.session.user follows profileUserId
-    const userId=req.params.userid;
-    console.log("put userid follow",typeof userId,typeof `${userId}`) //string string
+    const userId=req.params.userid; //profileUserId
+    console.log("put userid follow",userId, typeof userId,typeof `${userId}`) //string string
     const user=await User.findById({_id:userId}) //ok //better
     //const user=await User.findById({_id:`${userId}`}) //ok
     //const user=await User.findById({id:userId}) //wrong
@@ -24,8 +25,25 @@ router.put('/:userid/follow',async(req,res,next)=>{  //req.session.user follows 
     console.log('afterFollow1',typeof req.session.user.id,typeof `${req.session.user.id}`) //string string
 console.log('afterFollow2',typeof req.session.user._id,typeof `${req.session.user._id}`) //obj string
 
+//const zz=
 await User.findByIdAndUpdate(userId,{[option]:{followers:req.session.user._id}}).catch(error=>{console.log(error);res.sendStatus(400);})
 //or  to req.session.user.id or._id (or backticks) //(`${userId}`,{[option]:{followers:`${req.session.user.id}`}})
+    
+    //now add Notification when following (not unfollowing)
+    if(!isFollowing){
+        await Notification.insertNotification(userId,req.session.user,"follow",req.session.user._id)//await?
+        //Notification.insertNotification(userId,y,"",x) both ok 
+        //z:userId; if above await User.findByIdAndUpdate(userId,xx) assigned to a left const zz (zz then becomes mongodbDocObj), 
+        //then z:zz.id/zz._id/zz should be all alright 
+        //& zz will be shown as {a:'e',b:[c,d],_id:f,updatedAt:u} obj in newNote in Notification.insertNotification; whilst zz._id & z.id show ObjId
+        //y:req.session.user show populated in newNote in Notification.insertNotification {a:'e',b:[c,d],_id:f,updatedAt:u} entire obj
+        //y: or req.session.user._id (obj) ;or now req.session.user is mongodbDocObj so req.session.user.id (string) //all ok; just show objId in newNote
+        //x:req.session.user/req.session.user._id/req.session.user.id should be all alright
+        //(can await (insertNotification is async fn in NotificationSchema) or no await - both ok)
+        //can just return create or return await create (createdmongoDocObj) in NotificationSchema - both ok
+        //but difference?
+    }
+    
     res.status(200).send(req.session.user); //updatedUser
 })
 

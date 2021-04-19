@@ -1,0 +1,16 @@
+extends layouts/main-layout
+
+block content
+    script. 
+        var userLoggedInJs=!{userLoggedInJs_notification}
+    
+    .resultsContainer
+
+block headerButton 
+    a(href="/") 
+        //-full url path from app.js to notificationRoutes.js 
+        i.far.fa-plus-square
+
+block scripts 
+    script(src='/js/notificationsPage.js')
+    //-need .js here; from joint public folder (joint in app.js)
