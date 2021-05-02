@@ -1,6 +1,6 @@
  //below a couple of lines for scripts in main-layouts.pug or in branch.pugs
 //console.log("userLoggedIn@postPage.js: ",userLoggedIn,typeof userLoggedIn)
-console.log("userLoggedInJs@postPage.js: ",userLoggedInJs,typeof userLoggedInJs) //app.js get'/' -> main-layouts -> common.js
+console.log("userLoggedInJs@postPage.js: ",userLoggedInJs,typeof userLoggedInJs) //obj //app.js get'/' -> main-layouts -> common.js
 //console.log("userLoggedInJs_post@postPage.js: ",userLoggedInJs_post,typeof userLoggedInJs_post) //app.js get'/' -> main-layouts -> common.js
 
 /*

@@ -62,7 +62,9 @@ nav a{
     display: flex;
     align-items: center;
     justify-content: center;
-    color:#212529
+    color:#212529;
+
+    position:relative /*for Badge*/
 }
 nav a.blue{
     color: var(--blue)
@@ -702,4 +704,49 @@ button span{
     padding: var(--spacing);
     padding-bottom: 0;
     display: none;
+}
+
+
+.resultListItem.active{
+    background-color: var(--blueBgc);
+}
+.resultListItem.notification *{
+    pointer-events: none;
+}
+
+
+#notificationsBadge,#messagesBadge{
+    background-color: var(--red);
+    height:25px;
+    width:25px;
+    border-radius: 50%;
+    position: absolute;
+    top:0;
+    right: 0;
+    color:#fff;
+    font-size:18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+}
+#notificationsBadge.active,#messagesBadge.active{
+    visibility:visible
+}
+
+
+
+/*popup notification*/
+#notificationList{
+    position: fixed;
+    top:5px;
+    right: 5px;
+    width: 350px;
+    background-color: white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+#notificationList .active{ /*unread*/
+    background-color: white;
 }

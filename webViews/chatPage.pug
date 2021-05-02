@@ -73,8 +73,8 @@ block content
             .mainContentContainer 
                 .loadingSpinnerContainer 
                     img(src='/images/loadingSpinner.gif',alt='Loading spinner')
-                .chatContainer(styles="visibility:hidden") 
-                    //- css style visibility for loadingSPinner
+                .chatContainer(styles="visibility:hidden" data-room=`${chat._id}`) 
+                    //- css style visibility for loadingSPinner //data-room=`${chat._id}` or chat._id adding data-attr for clientSocket fronendJs
                     ul.chatMessages
 
                     .typingDots

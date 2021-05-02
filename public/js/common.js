@@ -90,11 +90,16 @@ $('#submitPostButton,#submitReplyButton').click(event=>{
  if(postData.commentedPost){
     console.log('newPostcommentedPost frontend',postData.commentedPost,postData.commentedPost._id,postData.commentedPost.id)
     console.log(typeof postData.commentedPost,typeof postData.commentedPost._id,typeof postData.commentedPost.id) 
+    //obj; 66db25 string; undefined
     console.log('newPostcommentter frontend',postData.commentedPost.postedBy,postData.commentedPost.postedBy_id,postData.commentedPost.postedBy.id) 
     console.log(typeof postData.commentedPost.postedBy,typeof postData.commentedPost.postedBy_id,typeof postData.commentedPost.postedBy.id) 
+    //66ac45 string; undef; undef
 } //.commentedPost populated in the backend (but no fields of commentedPost being populated) - obj string undefined
 //  .commentedPos.postedBy not being populated on server - string undefined undefined
-  if(postData.commentedPost){location.reload()} //for submitting comments
+  if(postData.commentedPost){
+      emitNotification(postData.commentedPost.postedBy) //.commentedPost field populated in postsJs apiRoutes
+      location.reload()
+    } //for submitting comments
         //reload the page '/'getAllPosts home.js //modal gone when reflesh page
         //below for submitting normal post -> not reflesh page just append instead
         var htmlEl=createPostHtml(postData)
@@ -123,8 +128,15 @@ $(document).on('click','.likeButton',(event)=>{// click attached to document onl
             //undefined undefined //string
             btn.find('span').text(updatedPostData.likes.length||'');
 
+            console.log('likes array type',updatedPostData.likes[0],typeof updatedPostData.likes[0])//60fac string //undefined undefined if unlike
+            //console.log(updatedPostData.likes[0]._id,typeof updatedPostData.likes[0]._id,updatedPostData.likes[0].id,typeof updatedPostData.likes[0].id)
+            //undefined "undefined" undefined "undefined" //error if unlike
+            console.log('likes postedBy type',updatedPostData.postedBy,typeof updatedPostData.postedBy)//60fac string
+            console.log(updatedPostData.postedBy._id,typeof updatedPostData.postedBy._id,updatedPostData.postedBy.id,typeof updatedPostData.postedBy.id)
+            //undefined "undefined" undefined "undefined"
             if(updatedPostData.likes.includes(userLoggedInJs._id)){
                 btn.addClass("active");
+                emitNotification(updatedPostData.postedBy)
             }else{
                 btn.removeClass("active")
             }
@@ -140,7 +152,7 @@ $(document).on('click','.likeButton',(event)=>{// click attached to document onl
 $(document).on('click','.retweetButton',(event)=>{
     var btn=$(event.target);
     var postId=getPostIdFromElment(btn) 
-    console.log(postId, typeof postId)
+    console.log(postId, typeof postId) //string
     
     if(postId===undefined) return;
     $.ajax({
@@ -149,13 +161,21 @@ $(document).on('click','.retweetButton',(event)=>{
         success:(retweetedPost)=>{ //unpopulated updated (parent) post from put('/:postid/retweet') in posts.js 
             //no createhtml element & append //no dsappend either if untweet
             console.log(retweetedPost)
-            console.log("id",retweetedPost.id,typeof retweetedPost.id,'_id',retweetedPost._id,typeof retweetedPost._id)
+            console.log("id",retweetedPost.id,typeof retweetedPost.id,'_id',retweetedPost._id,typeof retweetedPost._id) 
+            //undefined undefined 66ff044 string
             //below only appies to current clicked post 
             //(not applies to retweetPost if click retweetedParentPost, or retweetedParentPost if click retweetKidPost)
             //the above applies to likebutton too
             btn.find('span').text(retweetedPost.retweetUsers.length||'');
+            console.log('retweetUsers type',retweetedPost.retweetUsers[0],typeof retweetedPost.retweetUsers[0]) //string //undefined undefined if unretweet
+            //console.log(retweetedPost.retweetUsers[0]._id,typeof retweetedPost.retweetUsers[0]._id)//undefined "undefined"; error if unretweet
+            //console.log(retweetedPost.retweetUsers[0].id,typeof retweetedPost.retweetUsers[0].id)//undefined "undefined"; error if unretweet
             if(retweetedPost.retweetUsers.includes(userLoggedInJs._id)){
                 btn.addClass("active");
+                console.log('userId type',retweetedPost.postedBy,typeof retweetedPost.postedBy) //string
+                console.log(retweetedPost.postedBy._id,typeof retweetedPost.postedBy._id,retweetedPost.postedBy.id,typeof retweetedPost.postedBy.id)
+                    //undefined "undefined" undefined "undefined"
+                emitNotification(retweetedPost.postedBy)
             }else{
                 btn.removeClass("active")
             }
@@ -232,21 +252,27 @@ $(document).on('click','.followButton',(event)=>{ //css class of followButton
     //data-userid='${userData._id}'in searchJs createUserHtml (appended to .resultsContainer); f&F pug only has .resultsContainer 
     //data-userid=`${user._id}` in mixin.pug createFollowButton(user,isFollowing) used in profilePage.pug
     //making sure above two have same naem for datset
-    console.log("profileUserId",profileUserId,typeof profileUserId)
+    console.log("profileUserId",profileUserId,typeof profileUserId)//string
 
     $.ajax({
         url:`/api/users/${profileUserId}/follow`, //for userloggedin to either follow or unfollow the profileuser//profileuser to be followed or unfollowed
             type:"PUT",
             success:(updatedUserData,status,xhr)=>{ //updatedUser(loggedinUser that follows profileUser) from put('/:userid/follow') in userss.js
-                console.log(updatedUserData) //only has._id
+                console.log(updatedUserData) //obj; only has._id //updatedData is self Data (to (un)follow profileUser: self following profileUser; self is profileUser's follower)
                 console.log("id",updatedUserData.id,typeof updatedUserData.id,'_id',updatedUserData._id,typeof updatedUserData._id)
-                //undefined string no matter passed in is mongoDOc or req.session.user from '/api/users
+                //undefined undef; 66fbc string ; no matter passed in is mongoDOc or req.session.user from '/api/users //req.session.user assigned by returned mongoDBDocObj
                 if(xhr.status==404) return alert("user not found")
 
                 var diff=1;
                 if(updatedUserData.following && updatedUserData.following.includes(profileUserId)){
+                    console.log('following type',updatedUserData.following[0],typeof updatedUserData.following[0]) //66ac45 string
+                    if(updatedUserData.following[0]){ //not populated
+                        console.log('following_id',updatedUserData.following[0]._id,typeof updatedUserData.following[0]._id)//undef undef
+                        console.log('followingid',updatedUserData.following[0].id,typeof updatedUserData.following[0].id)//undef undef
+                    }
                     button.addClass("following")
                     button.text("Following")
+                    emitNotification(profileUserId)
                 }else{
                     button.removeClass("following")
                     button.text("Follow")
@@ -709,11 +735,68 @@ function outputPostsWithReplies(getData,container){
     var mainPostHtml=createPostHtml(getData.thisPostData,true)//createPostHtml from fn from common.js//getData is returned thisPost from api/posts.js
         container.append(mainPostHtml) //always having main post which user clicks on
 
-        console.log("getData.comments ",getData.comments)
+        console.log("getData.comments ",getData.comments) //arrayObj of obj
     getData.comments.forEach(post=>{
         var html=createPostHtml(post)//from fn from common.js
         container.append(html)
     })
 
 //    if(getData.length==0){container.append("<span class='noResults'> Nothing to show </span>")}
+}
+
+
+
+
+function markNotificationAsOpened(notificationId=null,cb=null){
+    if(cb==null)  cb = ()=>location.reload()
+
+    var url=notificationId!=null?`/api/notifications/${notificationId}/markAsOpened`
+                                :`/api/notifications/markAsOpened` //allNotificationsOpened
+
+    $.ajax({
+        url,
+        type:'PUT',
+        success:()=>cb() //or success: ()=>{cb()} or j=simply just success: cb
+    })
+} //called by clicking any notification (like retweet comment/reply) in notificationPageJs
+
+$('document').ready(()=>refreshChatsBadge())
+$('document').ready(()=>refreshNotificationsBadge())
+function refreshChatsBadge(){
+    $.get("/api/chats",{unreadOnly:true},chatsData=>{
+        console.log(chatsData.length)
+        var unreadChatsLength=chatsData.length
+        if(unreadChatsLength>0) $("#messagesBadge").text(unreadChatsLength).addClass('active')
+        else $("#messagesBadge").text("").removeClass('active')
+    })
+}//called on any page so commonJs onLoading
+function refreshNotificationsBadge(){
+    $.get("/api/notifications",{unreadOnly:true},notificationsData=>{
+        console.log(notificationsData.length)
+        var unreadNotificationsLength=notificationsData.length
+        if(unreadNotificationsLength>0) $("#notificationsBadge").text(unreadNotificationsLength).addClass('active')
+        else $("#notificationsBadge").text("").removeClass('active')
+    })
+} //click will call markNotificationAsopened which fires apiRoutes url making opened field as true, 
+//which then updateBageNumber in navbar @anyPage (when reflesh page f5 - need to socketio to make it real time/sync update)
+
+
+function showNotificationPopup(notification){
+    var html=createNotificationHtml(notification) //returned string html
+    var element=$(html) //HTML Obj; jquery version of the above html
+    element.prependTo('#notificationList')
+    setTimeout(()=>element.fadeOut(400),5000) 
+    //()=>html.fadeOut(400) or ()=>{html.fadeOut(400)} or ()=>{html.fadeOut(400);return} [(()=>{return html.fadeOut(400)})]
+
+}
+function showMessagePopup(newMessage){
+    if(!newMessage.chat.latestMessage._id){//.chat populated in POST messages.js but .chat.latestMessage not populated
+        newMessage.chat.latestMessage=newMessage //!!!
+    }
+    var html=createChatHtml(newMessage.chat) //returned string html
+    var element=$(html) //HTML Obj; jquery version of the above html
+    element.prependTo('#notificationList')
+    setTimeout(()=>element.fadeOut(400),5000) 
+    //()=>html.fadeOut(400) or ()=>{html.fadeOut(400)} or ()=>{html.fadeOut(400);return} [(()=>{return html.fadeOut(400)})]
+
 }

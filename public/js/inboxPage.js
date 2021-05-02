@@ -17,6 +17,7 @@ function outputChatList(chatList,container){
     chatList.forEach(chat=>{
         var html=createChatHtml(chat);
         container.append(html)
+        console.log('isGroupChat',chat.isGroupChat)
     })
 }
 
@@ -25,7 +26,24 @@ function createChatHtml(chatData){
     var images=getChatImageElments(chatData)
     var latestMsg=getLatestMsg(chatData.latestMessage)
 
-    return `<a href='/messages/${chatData._id}' class='resultListItem'>
+    //added for marking chat as opened after clicking this chat and marking all messages inside this chat as read/seen
+    /*console.log("chatlamsg",chatData.latestMessage,typeof chatData.latestMessage) //obj{populatedSender} or undefined undefined
+    if(chatData.latestMessage){
+        console.log("chatlamsgSeen ",chatData.latestMessage.seenBy,typeof chatData.latestMessage.seenBy) //[] obj or ["6088ac45"] arrayobj of stringObj
+        console.log("chatlamsgSeen0 ",chatData.latestMessage.seenBy[0],typeof chatData.latestMessage.seenBy[0])//undefined undefined or string
+        if(chatData.latestMessage.seenBy[0]){
+            console.log("chat_id ",chatData.latestMessage.seenBy[0]._id,typeof chatData.latestMessage.seenBy[0]._id) //undefined undefined
+            console.log("chatid ",chatData.latestMessage.seenBy[0].id,typeof chatData.latestMessage.seenBy[0].id) //undfined undefined
+        }
+    }
+    console.log(userLoggedInJs,typeof userLoggedInJs) //currently "object" {no populated fields}
+    console.log(userLoggedInJs._id,typeof userLoggedInJs._id,userLoggedInJs.id,typeof userLoggedInJs.id)//60ac4 string undefined undefined
+    */
+    //var activeClass=chatData.latestMessage.seenBy.includes(userLoggedInJs._id)?"":"" //from inboxPage.pug userLoggedInJs_inbox messageRoutes inbox payload
+    var activeClass=!chatData.latestMessage||chatData.latestMessage.seenBy.includes(userLoggedInJs._id)?"":"active"
+
+
+    return `<a href='/messages/${chatData._id}' class='resultListItem ${activeClass}'>
                 ${images}
                 <div class='resultsDetailsContainer ellipsis'>
                     <span class='heading ellipsis'>${chatname}</span>

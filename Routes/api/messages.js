@@ -58,11 +58,11 @@ router.post('/',async(req,res,next)=>{ console.log("req.body MSGs",req.body) //[
         */
 
         console.log('newMsg in messagesJs',newMsg._id,newMsg.id,typeof newMsg._id,typeof newMsg.id) //obj(objId);string
-        var chat=await Chat.findByIdAndUpdate(req.body.chatId,{latestMessage:newMsg._id}) //await opt
+        var chat=await Chat.findByIdAndUpdate(req.body.chatId,{latestMessage:newMsg},{new:true}) //await opt
              // or already populate latestMessage -> No still shows mongoObjId in mongodb; same as using newMsg._id or newMsg.id
              // or (newMsg._id or newMsg.id).populate??
             .catch(err=>console.log(err))
-        console.log('chat last messages',chat.latestMessage, typeof chat.latestMessage) //obj(objId)
+        console.log('chat last messages',chat.latestMessage, typeof chat.latestMessage) //obj(objId) //undefined & undefined as latestMessage always one step lag if not return updated -> new:true
         console.log('chatlastmessagesid',chat.latestMessage._id, typeof chat.latestMessage._id,chat.latestMessage.id, typeof chat.latestMessage.id)
         //objId(obj);<Buffer>obj
         //so latestMessage still not populated, even after findById&Update using {latestMessage:newMsg}; same as {latestMessage:newMsg._id} or {latestMessage:newMsg.id} allok
@@ -82,15 +82,16 @@ function insertNotifications(chat,message){
     console.log('sender in helper fn in messagesJs',message.sender,typeof message.sender)
     console.log(message.sender._id,typeof message.sender._id,message.sender.id,typeof message.sender.id)
     //{a:'x',b:[c,d],_id:x,date:date} obj //objId(obj);string - .sender is populated
-    chat.users.forEach(userId=>{ //chat.users not populated
+    chat.users.forEach(userId=>{ //chat.users not populated after Chat.findByIdAndUpdate above post '/' route
         console.log("userId in helper fn in messagesJs",userId,typeof userId)    //objId(obj)
         if(userId==message.sender._id.toString()) return //ok
         //if(userId==message.sender.id) return //ok
         //if(mongoose.Types.ObjectId(userId)==message.sender._id.toString()) return //ok
-        Notification.insertNotification(userId,message.sender,"newMessage",chat._id) //opt await
+        Notification.insertNotification(userId,message.sender,"newMessage",chat) //opt await
         //userId: objId(obj) shown in newNote@Notification.insertNotification @NotificationSchema.js; 
         //message.sender:{a:'x',b:[c,d],_id:x,date:date} obj shown in newNote
         //message.sender._id/.id both ok & shown as objId/obj in newNote
+        //chat or chat._id or chat.id(if passed in is mongoDBObj) all ok & all o/p objId in newNote
     })
 }
 

@@ -20,7 +20,7 @@ $("document").ready(()=>{
     socket.on("typing",()=>$('.typingDots').show()) //server app.js emit typing event
     socket.on("stop typing",()=>{$('.typingDots').hide();console.log('is typing')}) //server app.js emit typing event
     
-    $.get(`/api/chats/${chatID}`,(chatData)=>{ console.log(chatData)
+    $.get(`/api/chats/${chatID}`,(chatData)=>{ console.log(chatData,typeof chatData) //chatArrayObj - inside users field populated
         $("#chatName").text(chatData.chatName?chatData.chatName:getOtherChatUsersNamesString(chatData.users))
         //copied from inboxPage.Js
         //above helperfunctions in here chatPageJs (retuned data/argument from apiRoute chatsJs)
@@ -39,7 +39,7 @@ $("document").ready(()=>{
 
     //OUTPUT ALL CHAT_CONTETN/CHAT_MESSAGES IN THIS CHAT
     $.get(`/api/chats/${chatID}/messages`,(chatMsg)=>{ 
-        console.log('all messages for this chat',chatMsg,typeof chatMsg) //arrayObj - could be length of 0 if new chat
+        console.log('all messages for this chat',chatMsg,typeof chatMsg) //arrayObj - could be length of 0 if new chat; inside-content-obj see chatMsg[index] below
         //$("#chatName").text(chatMsg[0].chat.chatName?chatMsg[0].chat.chatName:getOtherChatUsersNamesString(chatMsg[0].chat.users)) //OK
         //populate users in router.get('/:chatid/messages') at chats.js so above $.get(`/api/chats/${chatID}` can be removed
 
@@ -47,7 +47,7 @@ $("document").ready(()=>{
         var lastSenderId=""
 
         chatMsg.forEach((message,index)=>{
-            console.log(chatMsg[index+1],typeof chatMsg[index+1]) //"object";undefined;"undefined"
+            console.log(chatMsg[index+1],typeof chatMsg[index+1]) //{populatedChat(populated chat.users),seenBy,populatedSender} "object";undefined "undefined"
 
         //    var html=createMessageHtml(message) //stirng (not jqueryObj)
             //var html=createAdvancedMessageHtml(message,chatMsg[index+1],lastSenderId) //ok//what if index==chatMsg.length-1? chatMsg[index+1] is null?
@@ -69,9 +69,14 @@ $("document").ready(()=>{
     
         $(".loadingSpinnerContainer").remove()
         $('.chatContainer').css("visibility",'visible') //can also be applied to other pages
+
+        //markAllMessagesAsRead()//or outside ajax call
+        //fire PUT api call (inside GET-apiReq) marking all msg in this chat as read/seen when (clicking one of chats in inboxPage or) open chatPage (onloading)
+        //incl refreshChatBadges
+
     }) //populate users in router.get('/:chatid/messages') at chats.js so above $.get(`/api/chats/${chatID}` can be removed
 
-
+    markAllMessagesAsRead() //or here or inside the ajax calls above
 
 }) //IF NO OUTPUT ALL CHATMESSAGES, 
 //then documentReady above $.get(`/api/chats/${chatID}` can be replaced by defining default name or chat name in messagesRoute '/messages/chatid'(with helper functions in messagesRoutesJs)
@@ -91,7 +96,7 @@ function createAdvancedMessageHtml(message,nextMessage,lastSenderId){
     var curSenderId=currentSender._id //'sender' is populated
     //console.log('currentSenderId',typeof curSenderId) //string
 
-    console.log('nextMessage',nextMessage,typeof nextMessage) 
+    console.log('nextMessage',nextMessage,typeof nextMessage) //{populatedChat(populated chat.users),seenBy,populatedSender} object or undefined undefined or null obj
     //getallmessagesofthissinglechat (GET on document Ready):object;or undefined undefined when index==chatMsg.length-1
     //POST send a new message: null obj if middle argument passed in is null, or undefined undefined
     var nextSenderId=nextMessage!=undefined?nextMessage.sender._id:"" //!=null or !=undefined or !='undefined' see notebook
@@ -185,7 +190,7 @@ function getOtherChatUsers(users){
 
 //send Messages
 $('.sendMessageButton').click(()=>{
-    messageSubmitted()
+    messageSubmitted() //refreshMsgBadge or markAllMsgasRead in here click eventHandler or inside  msgSubmitted or sendMessage
 })
 $('.inputTextbox').keydown((event)=>{
 
@@ -223,7 +228,7 @@ function updateTyping(){
 function messageSubmitted(){
     var content=$('.inputTextbox').val().trim();
     if(content!=""){
-        sendMessage(content)
+        sendMessage(content) //refreshMsgBadge or markAllMsgasRead in here msgSubmitted or inside sendMessage
         $('.inputTextbox').val("")
         socket.emit('stop typing',chatID) //to server appjs
         typing=false
@@ -241,7 +246,8 @@ function sendMessage(content){
         //POST@messagesJs-apiRoutes: when create, seenBy not specified as newMessage field/value
         //but will output seenBy ARRAY field in frontend console & show in mongodb
         //but when create a new chat mongodb does not show the fields thatare not defined or specified in chatData when create/POST @chatsJs apiRoutes
-        
+        //newMsg obj {populatedChat(populated chat.users),populatedSender}
+
         //populated sender & chat from messagesJs apiRoute; consistent with ouputChatMessages populated by GET('/api/chats/:chatid/messages')from chats.js
         addChatMessageHtml(newMsg) //for self seeing my own newMsg thats just sent
         /*
@@ -259,7 +265,11 @@ function sendMessage(content){
         console.log('senderid',newMsg.sender._id,typeof newMsg.sender._id,newMsg.sender.id,typeof newMsg.sender.id)//z string undefined undefined 
         //see difference in consol o/p of newMsg in messagesJs chatPageJs appJs
         */
-        if(connected) socket.emit('new message',newMsg) //for others seeing my newMsg thats just sent
+       console.log('start emitting from chatPageJs')
+        if(connected) socket.emit('new message',newMsg) //1b&2 //for others seeing my newMsg thats just sent //1b,2
+       //const chatMsg={newMsg,chatID};if(connected) socket.emit('new message',chatMsg) //1a, 1a2
+        //markAllMessagesAsRead() //or placed in click sendMessageButton or messageSubmitted fn or addchatmsghtml fn below
+        console.log("refreshChatsBadge from sendMessage in chatPage frontJs onload"); //refreshChatsBadge() //or placed in clickSendMsgbtn/msgSubmitted/addchatmsghtml
     })
 }
 
@@ -272,6 +282,10 @@ function addChatMessageHtml(message){
     var messageDiv=createAdvancedMessageHtml(message,null,'') //advanced version //see notebook: null (null Obj) or undefined (undefined undefined) or "undefined" (undefined string)
     //$('.chatMessages').append(messageDiv) //normal version
     addMessagesHtmlToPage(messageDiv,true) //advanced version
+
+    console.log("refreshChatsBadge from sendMessage in chatPage frontJs addhtml"); //refreshChatsBadge()
+    markAllMessagesAsRead() //still in above POST req cb fn - cb executing after successfully posting/sendign msg to mongodb
+    //or placed outside fn see above click sendMessageButton or messageSubmitted or sendmessage fn
 }
 
 function createMessageHtml(message){
@@ -299,4 +313,14 @@ function scrollToButtom(animated){
     else{
         container.scrollTop(scrollHeight)
     }
+}
+
+
+//mark all messages in this chat as Read/Seen as the user clickOpen the chat to read/see the latest messageS
+function markAllMessagesAsRead(){
+    $.ajax({
+        url:`/api/chats/${chatID}/messages/markAsRead`, //chatID from chatPage pug from chatRoutes backend non-api Routes
+        type:"PUT",
+        success:()=>refreshChatsBadge()
+    })
 }

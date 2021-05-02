@@ -123,7 +123,7 @@ io.on('connection',(clientsocket)=>{ //cb fn
     //received from $('.inputTextbox').keydown updateTyping from chatPage.js & send back to chatPage.js onDocumentReady
     clientsocket.on("stop typing",chatRoom=> clientsocket.in(chatRoom).emit("stop typing")) //when user stops typing in the chatroom
     
-    clientsocket.on("new message",newMsg=> {
+    clientsocket.on("new message",newMsg=> { //chatMsg //1a&1a2; argument depending on what passed onto from sendMessage fn from chatPage frontendJs
         /*
         console.log('new message sent back from frontend chatPageJs', newMsg.chat,newMsg.chat.users) 
         //{users:['x','y'],_id:'z',lastMessage:'u'} when chat.users not populated
@@ -142,15 +142,32 @@ io.on('connection',(clientsocket)=>{ //cb fn
         console.log('senderid',newMsg.sender._id,typeof newMsg.sender._id,newMsg.sender.id,typeof newMsg.sender.id) ///666fb string undefined undefined
         //see difference in consol o/p of newMsg in messagesJs chatPageJs appJs
         */
+       //const newMsg=chatMsg.newMsg; //1a//if passed in chatMsg from sendMessage fn in chatPageJs
         var chat=newMsg.chat
-        if(!chat.users) return console.log('Chat.users not defined/populated')
-        chat.users.forEach(user=>{
+        //console.log("chatid in appJs socket",chat._id,typeof chat._id,chat.id,typeof chat.id)//string undefined undefined
+        if(!chat.users) return console.log('Chat.users not defined/populated') //equals to {console.log;return;}
+        chat.users.forEach(user=>{ console.log("userx",user._id,typeof user._id)
+            //clientsocket.in(chatMsg.chatID).emit("message received & read",newMsg) 
+
             if(user._id==newMsg.sender._id) return 
-            //self'msg already as htmlelement appended/added onto the chat page
-            clientsocket.in(user._id).emit("message received",newMsg) 
+             //self'msg already as htmlelement appended/added onto the chat page
+             //opt for in(user._id) as emit from server (from frontJs sender) not sending back to initiator/starter/sender
+            //must for being in chatRoom //1a&1b; otherwise executing messageReceivedAndRead fn in clientSOcket frontendJs twice if 2users in the chatRm
+
+            //clientsocket.in(chatMsg.chatID).emit("message received & read",chatMsg)//1a2
+            //clientsocket.in(chatMsg.chatID).emit("message received & read",newMsg)//1a ok or below 1b//for all users in the chatRoom
+            //clientsocket.in(chat._id).emit("message received & read",newMsg) //1b;for all users in the chatRoom
+            //chatRm first (to markallmsgasRead & refreshchatbadge first) then useridRm below
+            //clientsocket.in(user._id).emit("message received",chatMsg)//1a2
+            clientsocket.in(user._id).emit("message received",newMsg) //1a,1b&2//for all users except the one who send msg emitting 
             //self's msg (htmlElement) also shows in or added onto other users' chat page immediately
             //details in performing 'message received' action in common clientSocketJs
         })
+    })
+
+    clientsocket.on("notification received",userRoom=> {
+        console.log('usroom ',userRoom, typeof userRoom) //toUser's id string
+        clientsocket.in(userRoom).emit("notification received")
     })
 })
 //server: installed & set up //client: make connections to soket io

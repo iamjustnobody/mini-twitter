@@ -1,4 +1,5 @@
 extends layouts/main-layout
+//-copied from inboxPage
 
 block content
     script. 
@@ -7,9 +8,10 @@ block content
     .resultsContainer
 
 block headerButton 
-    a(href="/") 
+    //-a(href="/") //-copied from inboxPage
+    button#markAsNotificationsAsRead
         //-full url path from app.js to notificationRoutes.js 
-        i.far.fa-plus-square
+        i.fas.fa-check-double
 
 block scripts 
     script(src='/js/notificationsPage.js')

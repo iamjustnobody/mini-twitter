@@ -50,8 +50,10 @@ html(lang="en")
                         i.fas.fa-search
                     a(href='/notification')
                         i.fas.fa-bell
+                        span#notificationsBadge
                     a(href='/messages')
                         i.fas.fa-envelope
+                        span#messagesBadge
                     a(href='/profile')
                         i.fas.fa-user
                     a(href='/logout')
@@ -67,6 +69,11 @@ html(lang="en")
                 .d-none.d-md-block.col-md-2.col-lg-4
                     span third column
         
+
+
+        #notificationList 
+        
+
 
         script(src="https://kit.fontawesome.com/033b2a0354.js" crossorigin="anonymous")
 
@@ -89,6 +96,7 @@ html(lang="en")
         //-ok
 
         script(src='/js/common.js')
+        script(src='/js/notificationPopupHtml.js')
         script(src='/js/clientSocket.js')
 
         //-block scripts 

@@ -157,7 +157,7 @@ router.get('/:id',async (req,res,next)=>{
     var thisPost={thisPostData}
     if(thisPostData.commentedPost!==undefined){thisPost.commentedPost=thisPostData.commentedPost}
     thisPost.comments=await getPosts({commentedPost:postId})
-    console.log(typeof thisPost,"comments ",thisPost.comments) //ok shows here //obj
+    console.log(typeof thisPost,"comments ",thisPost.comments) //ok shows here //arrayobj; [] emptyarray if no comments
     res.status(200).send(thisPost)  //thisPost:{thisPostData,commentedPost,comments} received in front end postPageJs
   //  res.status(200).json({status:'success',data:{thisPost}}) //.data.thisPost.{thisPostData,commentedPost,comments} reveived in postPage
 
@@ -196,7 +196,7 @@ router.post('/',async(req,res,next)=>{  ////called in home/overall page/pug on l
     .then(async(newPost)=>{ //newPost is the postedData
         newPost=await User.populate(newPost,{path:'postedBy'}) //!!
         console.log("newPost",newPost.id,typeof newPost.id,newPost._id,typeof newPost._id) 
-        //newPost is mongodbDocObj string obj //its like newPost being populated    
+        //newPost is mongodbDocObj; string obj //its like newPost being populated    
 
 
         //add notification!
@@ -207,22 +207,26 @@ router.post('/',async(req,res,next)=>{  ////called in home/overall page/pug on l
             //objId, objId, <Buffer>obj //obj obj obj
             newPost=await Post.populate(newPost,{path:'commentedPost'}) 
             //newPost.commentedPost is now an obj that has postedBy field (type of ObjId) //newPost being populated
-            console.log('newPostcommentedPost after populated',newPost.commentedPost._id,newPost.commentedPost.id) //objId objId
-            console.log(typeof newPost.commentedPost,typeof newPost.commentedPost._id,typeof newPost.commentedPost._id)//obj obj obj
+            console.log('newPostcommentedPost after populated',newPost.commentedPost._id,newPost.commentedPost.id) //objId strId
+            console.log(typeof newPost.commentedPost,typeof newPost.commentedPost._id,typeof newPost.commentedPost.id)//obj obj string
             
             console.log('comment on a post',newPost.commentedPost.postedBy,postedData.commentedPost.postedBy) //objId undefined
             console.log('newpost commentA',newPost.commentedPost.postedBy._id,typeof newPost.commentedPost.postedBy._id) //objId Obj
             console.log('newpost commentB',newPost.commentedPost.postedBy.id,typeof newPost.commentedPost.postedBy.id) //<Buffer id> Obj
         console.log('sessionUser',typeof req.session.user,req.session.user._id, typeof req.session.user._id, req.session.user.id,typeof req.session.user.id)
         //obj 66fb string undefined undefined
-            await Notification.insertNotification(newPost.commentedPost.postedBy._id,req.session.user._id,"comment",req.session.user._id)//await?
+            await Notification.insertNotification(newPost.commentedPost.postedBy._id,req.session.user._id,"comment",newPost)//await?
             //postedData.commentedPost.postedBy undefined; 
             //could use newPost.commentedPost.postedBy or newPost.commentedPost.postedBy._id(both ok & shown as objId(obj) in newNote) 
+            //populate commentedPost not populate commentedPost.postedBy
             //req.session.user/._id (both ok & shown as objId(obj) in newNote); 
             //below in follow/retweet/like
             //req.session.user/._id/.id - obj/objId(obj)/string; as req.session.user is (after await find queryobj) returned mongodbDoc Obj
             //- newNote @Notification.insertNotification shown entireObj (obj)/ObjId (obj)/ObjId (obj)
             //objId(obj type but a series of numbers/letters) for all request; 
+
+            //newPost (not o/p as populated although returned mongodbDocObj; but MOngoObjId type in notificationSchema but other arguments mongoObjIdType) 
+            //& newPost._id & newPost.id all in newNote o/p as objId
         }
 
         res.status(201).send(newPost) //return (for next dot) opt 
@@ -260,17 +264,19 @@ console.log('afterLike',req.session.user.id,typeof req.session.user.id,req.sessi
 //string obj
 
 //now add Notification when going to like or unlike
-console.log('updatedPost.postedBy type',typeof updatedPost.postedBy,typeof updatedPost.postedBy._id,typeof updatedPost.postedBy.id)
+console.log('updatedPost.postedBy type',typeof updatedPost.postedBy,typeof updatedPost.postedBy._id,typeof updatedPost.postedBy.id) //all obj
 console.log('updatedPost.postedBy',updatedPost.postedBy,updatedPost.postedBy._id,updatedPost.postedBy.id) 
-//obj obj <BUffer Obj>
+//objId objId <BUffer Obj>
 if(!isLiked){ //updatedPost.postedBy,userId/req.session._id,updatedPost.postedBy._d,req.session.user,req.session.user.id
-    await Notification.insertNotification(updatedPost.postedBy,req.session.user.id,"like",req.session.user._id)//await?
+    await Notification.insertNotification(updatedPost.postedBy,req.session.user.id,"like",updatedPost)//await?
     //lots of alternatives & combinations see below retweet
     //updatedPost.postedBy not populated so show as (unpopulated) ObjId in newNote@NotificationSchema insertNotification
     // updatedPost.postedBy (obj;not populated) or updatedPost.postedBy._id (ObjId); //both ok
     //not updatedPost.postedBy.id <Buffer >obj; updatedPost.postedBy.otherfields are undefined
     //req.session.user considered as populated mongoDBDOc obj - o/p entire obj in newNote; {a:'b',c:[d,e],createdAt:'t'}
     //could also use req.session.user._id or req.session.user.id/userId - obj or string both ok both shown as obj in newNote
+    //updatedPost._id/.id o/p in newNote as objId; updatedPost also o/p as objId in newNote (as cast to entityId of mongoObjId type?but other arguments also typeMongoId also o/p entireObj)
+
     //(can await (insertNotification is async fn in NotificationSchema) or no await - both ok)
     //can just return create or return await create (createdmongoDocObj) in NotificationSchema - both ok
     //but difference?
@@ -314,7 +320,7 @@ console.log('afterRetweet',updatedPost.id,typeof updatedPost.id,updatedPost._id,
 //string obj //its like updatedPost being populated as a field of something/obj
 
 //now Notification
-console.log('updatedPost.postedBy type',typeof updatedPost.postedBy,typeof updatedPost.postedBy._id,typeof updatedPost.postedBy.id)
+console.log('updatedPost.postedBy type',typeof updatedPost.postedBy,typeof updatedPost.postedBy._id,typeof updatedPost.postedBy.id)//obj *3
 console.log('updatedPost.postedBy',updatedPost.postedBy,updatedPost.postedBy._id,updatedPost.postedBy.id) 
 //updatedPost.postedBy not populated: x obj; x obj; <Buffer >obj
 if(!untweetPost){
@@ -326,7 +332,7 @@ if(!untweetPost){
 //b: could also be req.session.user._id (/req.session.user.id as req.session.user is mongodbDoc Obj -considered as populated (so .id is ObjId,not bufferObj)) 
 //b: but req.session.user._id (Obj type; ObjId) /or req.session.user.id (string type)  - in newNote both show as just id of obj type 
 //b:or just userId
-//d: updatedPost or updatedPost._id or updatedPost.id (&always show objId in newNote as defined as objId (not obj{}) in NotificationSchema)
+//d: updatedPost or updatedPost._id or updatedPost.id [&always show objId in newNote (as defined as objId (not obj{}) in NotificationSchema? but other arguments also typeMongoObj also o/p entireObj)]
 //d: NOT post/post._id/post.id 
 //updatedPost is retweetedPost; not post._id as post is the prev child retweetPost to be deleted or new child retweetPost to be posted 
 //(can await (insertNotification is async fn in NotificationSchema) or no await - both ok)

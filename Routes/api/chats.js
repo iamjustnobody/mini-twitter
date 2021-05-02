@@ -49,12 +49,37 @@ router.get('/',async(req,res,next)=>{
     .populate('latestMessage')
     .sort({updatedAt:-1}) // 'asc' "desc"
     .then(async chats=>{
+        //adding below to count the unread/unseen chat badges
+        if(req.query.unreadOnly!=undefined && req.query.unreadOnly=='true'){ //not req.body
+            console.log(req.query)
+            //chats=chats.filter(chat=>{
+            /*chats.forEach(chat=>{
+                if(chat.latestMessage!=undefined) {
+                    console.log('chatslamsg ',chat.latestMessage,typeof chat.latestMessage)//{seenBy:[] or seenBy:[6088ac],_id/sender/chat:6688c,time:time,msg:"xx"}obj
+                    console.log('chatslamsgSeenby ',chat.latestMessage.seenBy,typeof chat.latestMessage.seenBy) //[] or ["6088ac","6087f9"]//arrayobj
+                    console.log('chatslamsgSeenby0 ',chat.latestMessage.seenBy[0],typeof chat.latestMessage.seenBy[0]) //undefined undefined or 6088ac obj
+                    if(chat.latestMessage.seenBy[0]){
+                        console.log(chat.latestMessage.seenBy[0]._id,typeof chat.latestMessage.seenBy[0]._id) //6088ac obj
+                        console.log(chat.latestMessage.seenBy[0].id,typeof chat.latestMessage.seenBy[0].id) //<Buffer 60 88 ac> obj
+                    }
+                   // console.log(!chat.latestMessage.seenBy.includes(req.session.user._id)) //true
+                   // return !chat.latestMessage.seenBy.includes(req.session.user._id)
+                }
+                //or chat.latestMessage!=undefined&&!chat.latestMessage.seenBy.includes(req.session.user._id) //ok
+                
+            })*/
+            chats=chats.filter(chat=> chat.latestMessage&&!chat.latestMessage.seenBy.includes(mongoose.Types.ObjectId(req.session.user._id))) //ok
+            //req.session.user._id ok; req.session.user NOT ok as its not mongodbObj //mongoose.Types.ObjectId(req.session.user._id) ok
+        }
+
         chats=await User.populate(chats,{path:'latestMessage.sender'})
         res.status(200).send(chats) //return opt
     }) 
     .catch(error=>{console.log(error);res.sendStatus(400)})
 })
-
+//inboxPage still shows all chats (unfiltered) onInboxPageLoading (inboxJs)
+//+ only Badge (navBar; commonJs) shows unreadOnly filtered chats (navBar - any page) 
+/////(not including the chats thats previously opened but has new incoming messages)??
 
 
 router.put('/:chatid',async(req,res,next)=>{ //called by $('#chatNameButton').click in chatPage.js
@@ -149,8 +174,8 @@ router.get('/:chatid/messages',async(req,res,next)=>{ //find return array (even 
                 })) //1b //router.get('/:chatid') populate("users") 
             //var chatMsgArrayObj=await Promise.all(chatMessages.map(async eachChatMsg=> await User.populate(eachChatMsg,{path:'chat.users'}))) //1c//ok
             //return chatMsgArrayObj //2b or re-write to return await Promise.all//returned value used to next then; if not going to be used, but if asyncPromise inside then & if wanna wait promise, REturn asyncPromise
-            console.log(typeof chatMsgArrayObj,typeof chatMsgArrayObj[0])//obj undefined (if new chat)//or obj obj if there are messages in this chat
-            if(chatMsgArrayObj[0]!=undefined){console.log('pop',chatMsgArrayObj[0].chat.users)}//array //2a
+            console.log(".get /:chatid/messages @chatsJs backendApiRoutes",typeof chatMsgArrayObj,typeof chatMsgArrayObj[0])//obj undefined (if new chat)//or obj obj if there are messages in this chat
+            if(chatMsgArrayObj[0]!=undefined){console.log('pop',chatMsgArrayObj[0].chat.users)}//2a//array of Obj [{"a":"x","_id":"d","r":["ff","66"],"r2":[],"date":"date"},{}]
              res.status(200).send(chatMsgArrayObj) //2a
             /* await Promise.all(chatMessages.forEach(async eachChatMsg=>{eachChatMsg=await User.populate(eachChatMsg,{path:'chat.users'})})) //router.get('/:chatid') populate("users")
              console.log('pop',chatMessages[0].chat.users)
@@ -161,6 +186,17 @@ router.get('/:chatid/messages',async(req,res,next)=>{ //find return array (even 
         .catch(error=>{console.log(error);res.sendStatus(400)}) ////return opt
 }) //could then populate chat & chat.users, to replace router.get('/:chatid) above? & thus removing $.get(`/api/chats/${chatID}`) & just using $.get(`/api/chats/${chatID}/messages`) @chatPage.js documentReady
 //as all chats presented ('/api/chats' GET)have req.session.user involved; so chat def has users incl el $eq req.session.user
+
+
+//markAsRead/seenBy in messageSchema
+router.put('/:chatid/messages/markAsRead',async(req,res,next)=>{ 
+    Message.updateMany({chat:req.params.chatid},{$addToSet:{seenBy:req.session.user}}) //no dup
+    //seendBy:req.session.user._id or mongoose.Types.ObjectId(req.session.user._id) SHOULD be ok
+    .then (()=>res.sendStatus(204))
+    .catch(error=>{console.log(error);res.sendStatus(400)})
+})
+
+
 
 
 function getOtherChatUsersNamesString(users,self){
