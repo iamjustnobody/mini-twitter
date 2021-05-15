@@ -146,7 +146,7 @@ router.post('/profilePicture',upload.single('croppedImage'), async (req,res,next
 
 }) //uploaded in filesystem & mongodb but not on webpage as no such route so need to create new non-api-routes (GET)
 
-router.post('/coverPhoto',upload.single('croppedImage'), async (req,res,next)=>{
+router.post('/coverPhoto',upload.single('croppedCoverPhoto'), async (req,res,next)=>{
     //croppedImage is formdata property in common.js formData.append('croppedImage',blob) 
     //.single is the func on multer obj; processing single file; multiple files .array
     //get the image & add it to the location

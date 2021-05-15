@@ -85,8 +85,8 @@ block content
         //-span #{profileUser.fName}
         //-.profileHeaderContainer
 
-        - followersCount=profileUser.followers.length 
-        - followingCount=profileUser.following.length 
+        - var followersCount=profileUser.followers.length 
+        - var followingCount=profileUser.following.length 
             //-left-hand-side still used in pug here (not in scriptsJS); left+right used in pug by using #{} or =`${}`
         .profileHeaderContainer
             .coverPhotoSection 

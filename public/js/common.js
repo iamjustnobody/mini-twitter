@@ -249,7 +249,8 @@ $(document).on('click','.post',(event)=>{
 $(document).on('click','.followButton',(event)=>{ //css class of followButton
     var button=$(event.target);
     var profileUserId=button.data().userid;
-    //data-userid='${userData._id}'in searchJs createUserHtml (appended to .resultsContainer); f&F pug only has .resultsContainer 
+    //data-userid='${userData._id}'in searchJs createUserHtml (appended to .resultsContainer);
+    // f&F pug only has .resultsContainer but f&F Js followButton: data-userid='${userData._id}'
     //data-userid=`${user._id}` in mixin.pug createFollowButton(user,isFollowing) used in profilePage.pug
     //making sure above two have same naem for datset
     console.log("profileUserId",profileUserId,typeof profileUserId)//string
@@ -727,7 +728,7 @@ function outputPostsWithReplies(getData,container){
     container.html("")
 
 //    if(!Array.isArray(getData)){getData=[getData]} //no need although getData is a single post obj (not an array)
-    if(getData.commentedPost!==undefined && getData.commentedPost._id!==undefined){ 
+    if(getData.commentedPost!==undefined && getData.commentedPost!==null && getData.commentedPost._id!==undefined){ 
         //making sure .commentedPost is defined & populated (so not just onl having ObjId)
         var html=createPostHtml(getData.commentedPost)//from fn from common.js
         container.append(html)
@@ -790,9 +791,9 @@ function showNotificationPopup(notification){
 
 }
 function showMessagePopup(newMessage){
-    if(!newMessage.chat.latestMessage._id){//.chat populated in POST messages.js but .chat.latestMessage not populated
+    if(!newMessage.chat.latestMessage||!newMessage.chat.latestMessage._id){//.chat populated in POST messages.js but .chat.latestMessage not populated
         newMessage.chat.latestMessage=newMessage //!!!
-    }
+    } //checking latestMessage first (likewise in chats.js get'/' b4 checking arrayIncludes & createChatHtml b4 checkign arrayincludes)
     var html=createChatHtml(newMessage.chat) //returned string html
     var element=$(html) //HTML Obj; jquery version of the above html
     element.prependTo('#notificationList')

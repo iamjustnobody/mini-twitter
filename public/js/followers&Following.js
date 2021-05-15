@@ -43,7 +43,7 @@ function createUserHtml(userData,showFollowButton){ //no show followBtn for grou
     var followButton=""
     if(showFollowButton && userLoggedInJs._id != userData._id){
         followButton = `<div class='followBtnContainer'> 
-                            <button class='${buttonClass}' data-user='${userData._id}'>${text}</button>
+                            <button class='${buttonClass}' data-userid='${userData._id}'>${text}</button>
                         </div>`
                         
     }

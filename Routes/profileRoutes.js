@@ -5,19 +5,23 @@ const bcrypt=require('bcrypt')
 const middleware=require('../middleware')
 
 //similar to postRoutes.js
-router.get('/',middleware.requireLogin,(req,res,next)=>{  //have middleware MW here or in app.js
-    var payload={
+router.get('/',middleware.requireLogin,async (req,res,next)=>{  //have middleware MW here or in app.js
+    /*var payload={
         pageTitle:`${req.session.user.username}`, //or req.session.user.username both ok
         userLoggedIn_profile:req.session.user,  
         userLoggedInJs_profile:JSON.stringify(req.session.user), 
         profileUser:req.session.user
-    }
+    }*/ //followersCount=profileUser.followers.length & followingCount=profileUser.following.length under get'/profile' non-apiRoute
+    //followingCount & followersCount always zero through navBar in profilePug but not zero through '/profile/xx'
+    //as get'/profile/xx' using getPayload fn below using returned mongodbDocObj so profileUser.xx hav lengths
+    var payload=await getPayload(`${req.session.user.username}`,req.session.user) //or getPayload(req.session.user.username,req.session.user)
+
     console.log("profileUser getAll1",typeof req.session.user,typeof `${req.session.user}`,typeof req.session.user.username,typeof `${req.session.user.username}`)
     //obj string string string
     console.log("profileUser getAll2",typeof payload.profileUser,typeof payload.pageTitle) //obj string
     console.log("profileUser getAll3",typeof payload.userLoggedInJs_profile,typeof payload.userLoggedIn_profile)//string obj
     console.log(payload.profileUser.id,payload.profileUser._id,typeof payload.profileUser.id,typeof payload.profileUser._id)
-    //undefined string undefined string as req.session.user (obj) only has ._id string
+    //undefined string undefined string as req.session.user (obj) only has ._id string //if using getPayload fn: 66f99 66f99 string obj
     res.status(200).render('profilePage',payload) //webViews folder 'profilePage.pug' for this GET /:userID or/:userid
 }) // '/me' user self page
 

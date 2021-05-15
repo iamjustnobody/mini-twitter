@@ -36,7 +36,7 @@ function messageReceived(newMessage){ //2
 
    //if($('.chatContainer').length==0){ //no this instance so not on chat page so show popup notification //non-chat pages
     //adding data-room=`${chat._id}` or chat._id in chatPage.pug
-    if($(`[data-room="${newMessage.chat._id}"]`).length==0){ //now @non-chat pages or another chat page
+    if(!$(`[data-room="${newMessage.chat._id}"]`)||$(`[data-room="${newMessage.chat._id}"]`).length==0){ //now @non-chat pages or another chat page
         showMessagePopup(newMessage)
         console.log("refreshChatsBadge from messageReceived in clientSocket frontJs"); refreshChatsBadge() //opt
     }
