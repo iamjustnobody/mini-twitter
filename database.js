@@ -10,7 +10,7 @@ class MongoDBTwitterClone{
     connect(){
         mongoose.connect("mongodb+srv://TwitterCloneClusterDBsAdminUsers:TwitterCloneClusterDBsPassWord@twitterclonecluster.r01y0.mongodb.net/myFirstTwitterCloneDatabase?retryWrites=true&w=majority")
                 .then(con=>{ //console.log(con.connections)
-                    console.log("DB connection succeed");
+                    console.log("hello DB connection succeed");
                 }) //username:TwitterCloneClusterDBsAdminUsers
                 .catch(err=>{console.log("db connection failed",err.message);}) //wrong pwd mongo atlas error authentic error
 
