@@ -46,12 +46,12 @@ router.get('/:chatid',middleware.requireLogin,async(req,res,next)=>{
     }
 
     var chat=await Chat.findOne({_id:chatID,users:{$elemMatch:{$eq:userID}}}).populate("users")
-    if(chat!=null){console.log('/chatid2',typeof chat.id,typeof chat._id)} //string //obj
+    //if(chat!=null){console.log('/chatid2',typeof chat.id,typeof chat._id)} //string //obj
 
     if(chat==null){
         //check if chat id is really user id // a.profileButton(href=`/messages/${profileUser._id}`) in profilePage.pug
         var userFound=await User.findById(chatID)
-        console.log('userFound',typeof userFound.id,typeof userFound._id) //string (mongoObj's id -> string) //obj (mongoObj's _id -> also obj)
+        //console.log('userFound',typeof userFound.id,typeof userFound._id) //string (mongoObj's id -> string) //obj (mongoObj's _id -> also obj)
         if(userFound!=null){
             //get chat using user id
             chat=await getChatByUserIdViaProfilePage(userFound._id,userID) //obj (mongoose.Types.ObjectId);//string (req.session.user (obj) 's _id -> string)
@@ -78,7 +78,7 @@ router.get('/:chatid',middleware.requireLogin,async(req,res,next)=>{
 })
 
 function getChatByUserIdViaProfilePage(userLoggedInId,anotherUserId){
-    console.log('getChat fn',typeof userLoggedInId,typeof anotherUserId) //obj string
+    //console.log('getChat fn',typeof userLoggedInId,typeof anotherUserId) //obj string
     return Chat.findOneAndUpdate({
         isGroupChat:false,
         users:{
