@@ -10,20 +10,6 @@ router.use(bodyParser.urlencoded({extended:false}))//opt*2
 const User=require('../ModelSchema/UserSchema')
 const bcrypt=require('bcrypt')
 
-/*
-router.get('/',(req,res,next)=>{  //or restful api router.route('/'),get(cb fn rr or rrn); not router/route.use('/').get(cb)
-    var payload={
-        pageTitle:'Register'
-    }
-    res.status(200).render('register',payload)
-})
-router.post('/',(req,res,next)=>{  //or restful api router.route('/'),get(cb fn rr or rrn); not router/route.use('/').get(cb)
-    var payload={
-        pageTitle:'Register'
-    }
-    res.status(200).render('register',payload)
-})*/ //next opt due to res
-
 router.route('/')
 .get((req,res)=>{ 
     var payload={
@@ -32,31 +18,16 @@ router.route('/')
     res.status(200).render('register',payload)
 })
 .post(async(req,res)=>{ 
-    console.log(req.body); //output the name in the form
-    //value = fistName lastName username email (the name value) in register.pug
+    
     const {firstName,lastName,username,email,password}=req.body;
     const first_name=firstName.trim();
     const last_name=lastName.trim();
     const user_name=username.trim();
     const user_email=email.trim();
 
-    //const payload=req.body; //all fields & no trimmed i/p data //remain untrimmed values in the fields that have 'value' in register.pug
-    const payload={firstName,lastName,username,email} //select some fields; none trimmed ////remain untrimmed values in the fields that have 'value' in register.pug
-    //const payload={first_name,last_name,user_name,user_email} //select & trim some fields //all blank no values after submit unless chaning in register.pug value=firstName to `${first_name}`
-    //const payload={firstName:first_name,lastName:last_name,username:user_name,email:user_email} //remain trimmed values in the fields that have 'value' in register.pug
-    
+    const payload={firstName,lastName,username,email} 
 
-/*
-    var {firstName,lastName,username,email,password}=req.body;
-    firstName=firstName.trim();lastName=lastName.trim(); username=username.trim();email=email.trim();
-    //const payload=req.body; //remain untrimmed values in the fields that have 'value' in register.pug
-    const payload={firstName,lastName,username,email} ////remain trimmed values in the fields that have 'value' in register.pug
-    //const payload={fn:firstName,ln:lastName,un:username,e:email}//all blank in the input fields undefined/null values unless chaning in register.pug value=firstName to `${fn}`
-*/
-
-
-    //if(firstName&&lastName&&username&&email&&password){ //trimmed values apart from password
-    if(first_name&&last_name&&user_name&&user_email&&password){ //trimmed values apart from password
+    if(first_name&&last_name&&user_name&&user_email&&password){ 
         const user=await User.findOne({
             $or:[{username},{email}]
         })
