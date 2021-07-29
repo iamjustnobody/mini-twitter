@@ -14,7 +14,7 @@ router.get('/:selectedTab',middleware.requireLogin,(req,res,next)=>{
     res.status(200).render('searchPage',payload) 
 })
 
-function createPayload(userLoggedIn){ //if (userLoggedIn_search) as argument
+function createPayload(userLoggedIn){ //if (userLoggedIn_search) 
     return {
         pageTitle:'Search',
         userLoggedIn_search:userLoggedIn,  //then userLoggedIn_search,
