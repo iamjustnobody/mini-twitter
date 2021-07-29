@@ -10,7 +10,7 @@ router.get('/',middleware.requireLogin,(req,res,next)=>{
     var payload={
         pageTitle:'Inbox',
         userLoggedIn_inbox:req.session.user,
-        userLoggedInJs_inbox:JSON.stringify(req.session.user) // wrongn if JSON.stringify(userLoggedIn_inbox)
+        userLoggedInJs_inbox:JSON.stringify(req.session.user) 
     }
     res.status(200).render('inboxPage',payload) //pug
 })
@@ -29,7 +29,7 @@ router.get('/new',middleware.requireLogin,(req,res,next)=>{
 router.get('/:chatid',middleware.requireLogin,async(req,res,next)=>{  
     var userID=req.session.user._id
     var chatID=req.params.chatid 
-    console.log('/chatid1',typeof req.session.user,typeof userID,typeof req.session.user.id,typeof chatID) 
+    //console.log('/chatid1',typeof req.session.user,typeof userID,typeof req.session.user.id,typeof chatID) 
     //obj //string //undefined //stirng
 
     var payload={ 
@@ -46,9 +46,6 @@ router.get('/:chatid',middleware.requireLogin,async(req,res,next)=>{
     }
 
     var chat=await Chat.findOne({_id:chatID,users:{$elemMatch:{$eq:userID}}}).populate("users")
-    //{$eq:userID} ok;{$eq:`${userID}`} ok; $eq:`${mongoose.Types.ObjectId(userID)}` ok; $eq:mongoose.Types.ObjectId(`${userID}`) ok
-    //{$eq:mongoose.Types.ObjectId(userID)} ok
-    //chatID mongoose.Types.ObjectId(chatID) both ok//`${chatID}`Ok//mongoose.Types.ObjectId(`${chatID}`) ok//`${mongoose.Types.ObjectId(chatID)}`Ok
     if(chat!=null){console.log('/chatid2',typeof chat.id,typeof chat._id)} //string //obj
 
     if(chat==null){
@@ -62,7 +59,6 @@ router.get('/:chatid',middleware.requireLogin,async(req,res,next)=>{
             payload.chat=chat
             //chat.chatName=chat.chatName?chat.chatName:getOtherChatUsersNamesString(chat.users,req.session.user) 
             //mongodocObj(._id->obj;.id->stirng) obj (._id-> string;.id->obj)
-            //ok no need for documentready at chatPage.js or GET '/api/chats/chatid' in chatsJs
             payload.chatJs=JSON.stringify(chat)
         }
         else{
@@ -88,10 +84,6 @@ function getChatByUserIdViaProfilePage(userLoggedInId,anotherUserId){
         users:{
             $size:2,
             $all:[ //all condiftions met
-                //{$elemMatch:{$eq:userLoggedInId}},
-                //{$elemMatch:{$eq:anotherUserId}}
-                //above wil have multiple private chats from otherUsr' profile page; groupChat is false
-                //{$elemMatch:{$eq:userLoggedInId}}, //ok if pass in mongoObjId (mongoObj._id (Obj) ok but not .id (string)); but to be reassured, cast as below
                 {$elemMatch:{$eq:mongoose.Types.ObjectId(userLoggedInId)}},
                 {$elemMatch:{$eq:mongoose.Types.ObjectId(anotherUserId)}} //req.session.user is obj; obj._id stirng .id undefined
             ]
@@ -107,14 +99,6 @@ function getChatByUserIdViaProfilePage(userLoggedInId,anotherUserId){
         upsert:true
     }) //return the newly updated
     .populate("users")
-    //return mongoquery (not returned mongo doc/obj)
-    //dup (private; false groupChat) two-people-chats due to if mongoObjId
-    //via profile: two people private chat->only one chat; always goes to this chat whenever click mail/evelop icon on anotherUser's profilePage
-    //grouChat true: via newMessagePage/pug search& click createNew button (chatsJs post '/'); multiple chats even for just same two people
-    //populate in findOneAndUpdate Chain (not just find or findById or findOne); 
-    //still in GET request but within url RoutesJS (not apiRoutes) on documentReady pageLoading (frontendJs)
-    //统一populate in chatsJs get '/'
-    //will also listed on chatPage; but some pairs of same two users only one pair is private
 }
 
 
@@ -128,10 +112,7 @@ function getOtherChatUsersNamesString(users,self){
 function getOtherChatUsers(users,self){
     if(users.length==1) return users
     return users.filter(user=>{
-        return user.id!==self._id;// backend checking using user._id!=self._id in case left ._id is obj right ._id is string 
-        //or return user.id!==self._id or user.id!=self._id //all ok
-        //frontendJs string bothsides so can use user._id!==self._id
-        //req.session.user._id; //stirng //userLoggedInJs._id //these fn copied from chatPage.js
+        return user.id!==self._id;//  or user.id!=self._id 
     })
 }
 
