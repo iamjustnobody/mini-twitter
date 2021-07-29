@@ -9,9 +9,9 @@ const path=require('path')
 router.get('/images/:path',(req,res,next)=>{ 
     res.sendFile(path.join(__dirname,`../uploads/images/${req.params.path}`))//path to image
 })
-//or res.sendFile(path.join(__dirname,"../uploads/images/" + req.params.path))
+// res.sendFile(path.join(__dirname,"../uploads/images/" + req.params.path))
 //filePath -> targetPath in users.js; also path in mongo db
 router.get('/coverPhotos/:path',(req,res,next)=>{ 
     res.sendFile(path.join(__dirname,`../uploads/coverPhotos/${req.params.path}`))//path to image
 })
-module.exports=router; //need MW fn NOt a Obj
+module.exports=router;
