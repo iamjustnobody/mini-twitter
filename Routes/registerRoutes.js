@@ -32,7 +32,7 @@ router.route('/')
             $or:[{username},{email}]
         })
         .catch(error=>{
-            console.log(error)
+            //console.log(error)
             payload.errorMessage="Something went wrong "+error.errorMessage
             res.status(200).render('register',payload)
         })
@@ -41,7 +41,8 @@ router.route('/')
             //no user found
             const pwd=await bcrypt.hash(password,10)
             User.create({fName:first_name,lName:last_name,username:user_name,email:user_email,password:pwd})
-            .then(newuser=>{console.log(newuser);req.session.user=newuser;return res.redirect('/')}) //root level of site '/' -> render home page app.js
+            .then(newuser=>{//console.log(newuser);
+                            req.session.user=newuser;return res.redirect('/')}) //root level of site '/' -> render home page app.js
         }
         else{ //user found
             if(email===user.email){
