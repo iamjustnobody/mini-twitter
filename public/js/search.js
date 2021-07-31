@@ -1,8 +1,7 @@
 
-var timer; //global scope so previous timer can be accessed
-//console.log("timer",timer)
+var timer; 
 
-$('#searchBox').keydown((event)=>{ //$(searchBox).keydown((event)=>{
+$('#searchBox').keydown((event)=>{ 
     clearTimeout(timer);//reset previous timer
     var textbox=$(event.target)
     var value=textbox.val()
@@ -22,18 +21,10 @@ $('#searchBox').keydown((event)=>{ //$(searchBox).keydown((event)=>{
     }, 1000);
 })
 
-//the entire codes in search.js can copied to newMessage.Js which can define same (or diff) name/variable var timer
-//if no newMessage.JS, and newMessage.pug just use commonJs script (no extra block script)
-// and commonJs b4 searchJs, then the above var timer can be removed, as var timer already defined in commonJs (must be in commonJs)
-//but if searchJs b4 commonJS & VAR TIMER (must be) defined in searchJs, no need to define var timer in commonJs
 
 function search(searchTerm,searchType){
-    var url=searchType=="users"?"/api/users":"/api/posts"  //NOT 'api/posts' but '/api/posts'!
-    //selectedTab from searchRoutes: 'search/:selectedTab' so if '/search/bacon' directly goes to Posts tab with '/search/bacon' url
-    //since selectedTab!='users' in searchPage.pug & router.get('/') in searchRoutes.js
-    //but no such api call GET '/api/bacon' so not `api/${}` to avoid fire non-existing api call /api/bacon
-    $.get(url,{search:searchTerm},(searchRes)=>{ //req.query.search in api routes // '/?&'
-        console.log('search results ',searchRes) //populated (as defined in getPosts in posts.js) searchRes
+    var url=searchType=="users"?"/api/users":"/api/posts"  
+    $.get(url,{search:searchTerm},(searchRes)=>{ 
 
         if(searchType=='users'){
             outputUsers(searchRes,$(".resultsContainer"))
@@ -64,8 +55,6 @@ function createUserHtml(userData,showFollowButton){ //no show followBtn for grou
 
     var name=userData.fName+" "+userData.lName
     var isFollowing= userLoggedInJs.following && userLoggedInJs.following.includes(userData._id)
-//just like userLoggedIn_profile.following && userLoggedIn_profile.following.includes(profileUsrid) in profilePage.pug
-//userLoggedInJs@JS here is JSON.parse(JSON.stringify(userLoggedIn_profile@pug))
 
     var text = isFollowing?"Following":"Follow"
     var buttonClass = isFollowing?"followButton following":"followButton"
@@ -77,9 +66,7 @@ function createUserHtml(userData,showFollowButton){ //no show followBtn for grou
                         </div>`
                         
     }
-//data-user='${userData._id}' or data-user=userData._id //ok //class='${buttonClass}' or class=buttonClass //createdUserHtml added to f&F.pug .resultsContainer
-//just like createFollowButon in mixin.pug which is used in profilePage.pug 
-//click follow/unfollow button even handler is in commonJs so need f&f.pug & profillePage.pug use same name for dataset (data-userid)
+
 
     return `<div class="user">
                 <div class='userImageContainer'>
@@ -94,14 +81,5 @@ function createUserHtml(userData,showFollowButton){ //no show followBtn for grou
                 ${followButton}
             </div>`
 
-    //`<img src=${userData.profilePic}>` or `<img src="${userData.profilePic}">` <img src='${userData.profilePic}'>
-    //all ok
-    /*
-    return 
-    <div class="user">
-        <div class='userImageContainer'>
-            <img src=`${userData.profilePic}`/>
-        </div>
-    </div>
-    */
+
 }
