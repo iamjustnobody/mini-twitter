@@ -12,7 +12,7 @@ $(document).ready(()=>{
 function outputChatList(chatList,container){
     if(chatList.length==0){
         container.append("<span class='noResults'>Nothing to show</span>") //append html
-        //or backtick (def backticks if there's ${} in <> or between <></>)
+
     }
     chatList.forEach(chat=>{
         var html=createChatHtml(chat);
@@ -26,20 +26,7 @@ function createChatHtml(chatData){
     var images=getChatImageElments(chatData)
     var latestMsg=getLatestMsg(chatData.latestMessage)
 
-    //added for marking chat as opened after clicking this chat and marking all messages inside this chat as read/seen
-    /*console.log("chatlamsg",chatData.latestMessage,typeof chatData.latestMessage) //obj{populatedSender} or undefined undefined
-    if(chatData.latestMessage){
-        console.log("chatlamsgSeen ",chatData.latestMessage.seenBy,typeof chatData.latestMessage.seenBy) //[] obj or ["6088ac45"] arrayobj of stringObj
-        console.log("chatlamsgSeen0 ",chatData.latestMessage.seenBy[0],typeof chatData.latestMessage.seenBy[0])//undefined undefined or string
-        if(chatData.latestMessage.seenBy[0]){
-            console.log("chat_id ",chatData.latestMessage.seenBy[0]._id,typeof chatData.latestMessage.seenBy[0]._id) //undefined undefined
-            console.log("chatid ",chatData.latestMessage.seenBy[0].id,typeof chatData.latestMessage.seenBy[0].id) //undfined undefined
-        }
-    }
-    console.log(userLoggedInJs,typeof userLoggedInJs) //currently "object" {no populated fields}
-    console.log(userLoggedInJs._id,typeof userLoggedInJs._id,userLoggedInJs.id,typeof userLoggedInJs.id)//60ac4 string undefined undefined
-    */
-    //var activeClass=chatData.latestMessage.seenBy.includes(userLoggedInJs._id)?"":"" //from inboxPage.pug userLoggedInJs_inbox messageRoutes inbox payload
+
     var activeClass=!chatData.latestMessage||chatData.latestMessage.seenBy.includes(userLoggedInJs._id)?"":"active"
 
 
@@ -49,14 +36,13 @@ function createChatHtml(chatData){
                     <span class='heading ellipsis'>${chatname}</span>
                     <span class='subText ellipsis'>${latestMsg}</span>
                 </div>
-            </a>`; //return html ///messagesRoutes url path
+            </a>`; 
 }
 
 
 function getLatestMsg(latestMsg){ //populate chatData.latestMessage
     if(latestMsg!=null){
         var sender=latestMsg.sender
-        //return `${latestMsg.msgContent}` //undefined if not populate chat.latestMessage at chatsJs get'/api/chats'
         return `${sender.fName} ${sender.lName}: ${latestMsg.msgContent}` 
         //also need to populate chatData.latestMessage.sender chatsJs get'/api/chats'
     } //latestMessage from POST request @messagesJs api route
