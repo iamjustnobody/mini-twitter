@@ -1,14 +1,10 @@
-//below codes copied from search.js & modified
-var timer; //global scope so previous timer can be accessed
-//console.log("timer",timer)
+//codes copied from search.js & modified
+var timer; 
 
-$('#userSearchTextbox').keydown((event)=>{ //$(userSearchTextbox).keydown((event)=>{
+$('#userSearchTextbox').keydown((event)=>{ 
     clearTimeout(timer);//reset previous timer
     var textbox=$(event.target)
     var value=textbox.val()
-    //var searchType=textbox.data().search ////data-search in searchPage.pug//selectedTab from searchRoutes
-    //no data- in newMessage.pug so searchType here as we only search for user
-    //console.log('searchbox:',value,searchType)
 
     if(value==""&&(event.which==8||event.keyCode==8)){
         //remove user from selection 
@@ -38,9 +34,7 @@ $('#userSearchTextbox').keydown((event)=>{ //$(userSearchTextbox).keydown((event
 
 
 function searchUsers4Chats(searchTerm){  
-    $.get("/api/users",{search:searchTerm},(searchRes)=>{ //req.query.search in api routes // '/?&'
-        console.log('search results ',searchRes) //populated (as defined in getUsers in users.js) searchRes
-        //returned mongodb Obj from users.js
+    $.get("/api/users",{search:searchTerm},(searchRes)=>{ 
 
         outputSelectableUsers4Chats(searchRes,$('.resultsContainer'))
     })
@@ -52,12 +46,12 @@ var selectedUsers=[]
 function outputSelectableUsers4Chats(getUsersData,container){
     container.html("")
 
-    getUsersData.forEach(userData=>{ // to be HTMLcreated, outputted/displayed, and clicked/selected
+    getUsersData.forEach(userData=>{ 
         if(userData._id==userLoggedInJs._id || selectedUsers.some(sltedUsr=>{return sltedUsr._id==userData._id})){ 
-            //not create/show userself or the users already selected
+
             return
-        } //next userData; leave this cb
-        var htmlEl=createUserHtml(userData,true) //create each userelement to be displayed below for selection4Chats/ for click
+        } 
+        var htmlEl=createUserHtml(userData,true) 
         
         var element=$(htmlEl) //create jquery Obj
 
@@ -65,8 +59,7 @@ function outputSelectableUsers4Chats(getUsersData,container){
         container.append(element) //each element displayed on the output list for click/selection
 
         element.click(()=> userSelected(userData)) //add click handler
-        //click/select element displayed on the list (shown when timeout after typing sth)
-        //when click, adding selected element to the 'To' field
+
     })
 
     if(getUsersData.length==0){ //no such users matched the selecting/typing criteria @backend users.js GET
@@ -114,63 +107,12 @@ function addSelectedUserHtmlOneByOne(user){
         var name =user.fName+" "+user.lName //or using backtick injection
         var curUserHtmlStrEl=`<span class='selectedUser'>${name}</span>`
         var userElement=$(curUserHtmlStrEl)
-        console.log(selectedUsers.length)
-        //$("#selectedUsers").prepend(curUserHtmlStrEl)//$("#selectedUsers").prepend(userElement) //reverse order - not we want here
         $("#selectedUsers>:last").before(curUserHtmlStrEl)// $("#selectedUsers>:last").before(userElement) //bothok
-       //$("#selectedUsers :last").before(curUserHtmlStrEl)//$("#selectedUsers :last").before(userElement) //both ok
-       //$("#selectedUsers").children().last().before(curUserHtmlStrEl) //$("#selectedUsers").children().last().before(userElement) //both ok
-       //$("#selectedUsers :last-child").before(curUserHtmlStrEl)//$("#selectedUsers :last-child").before(userElement) //both ok
-       
-       //$("#selectedUsers span:last-child").after(userElement) //not ok here as initially no span 
-      // $("#selectedUsers span:last").after(userElement) //not ok here as initially no span 
-       //$("#selectedUsers .selectedUser").last().after(userElement) //not ok here as initially no '.selectedUser'
-      // $(".selectedUser :last-of-type").after(userElement) //not ok here as initially no '.selectedUser'
-      // $("#selectedUsers").children(".selectedUser").last().after(userElement) //not ok here as initially no '.selectedUser'
-      //$("#userSearchTextbox").before(curUserHtmlStrEl)//$("#userSearchTextbox").before(userElement) // bothOK
-      //userElement.insertBefore($("#userSearchTextbox")) //userElement.insertBefore("#userSearchTextbox") //both ok
-      //curUserHtmlStrEl.insertBefore($("#userSearchTextbox")) //curUserHtmlStrEl.insertBefore("#userSearchTextbox") //neither ok
-      
-      //create another container just for these span / .selectedUser elements so append can be applied
-        //if(lastUserHtmlStrEl==''||lastUserHtmlStrEl.length==0) $("#selectedUsers").prepend(userElement) //if revert process; add-delete-add again lastUserHtmlStrEl is not empty
-      //  if(selectedUsers.length==1) $("#selectedUsers").prepend(userElement)
-       // else  curUserHtmlStrEl.insertAfter(lastUserHtmlStrEl)//.insertAfter($(lastUserHtmlStrEl))//.insertAfter($("span"))//.insertAfter($(".selectedUser"))//wrong not a function
-      //else userElement.insertAfter($(".selectedUser")) //userElement.insertAfter($("span")) //none working
-      //else curUserHtmlStrEl.insertAfter(".selectedUser") //curUserHtmlStrEl.insertAfter("span") //none working as curUserHtmlStrEl. is not a fn
-      //  else userElement.insertAfter("span") //userElement.insertAfter(".selectedUser") //left-all OK
-      //  else userElement.insertAfter($(lastUserHtmlStrEl)) //userElement.insertAfter(lastUserHtmlStrEl) //$(lastUserHtmlStrEl).after(userElement) 
-      //above line not working
-      //else $("#selectedUsers span:last-child").after(userElement)  //after(curUserHtmlStrEl) //span not having child
-      //else $("#selectedUsers span:last").after(curUserHtmlStrEl) //else $("#selectedUsers span:last").after(userElement) //both ok
-     // else userElement.insertAfter($("#selectedUsers span:last")) //ok
-      // else $("#selectedUsers .selectedUser").last().after(curUserHtmlStrEl)  //$("#selectedUsers .selectedUser").last().after(userElement) //both ok
-      //else userElement.insertAfter($("#selectedUsers .selectedUser").last()) //ok
-      //else $(".selectedUser:last-of-type").after(curUserHtmlStrEl)//$(".selectedUser:last-of-type").after(userElement) //both ok 
-      //else userElement.insertAfter($(".selectedUser:last-of-type"))//ok
-      //else $(".selectedUser :last-of-type").after(curUserHtmlStrEl)//$(".selectedUser :last-of-type").after(userElement) //neither works
-      //else $("#selectedUsers").children(".selectedUser").last().after(curUserHtmlStrEl) //$("#selectedUsers").children(".selectedUser").last().after(userElement) //both ok
-      //else userElement.insertAfter($("#selectedUsers").children(".selectedUser").last())//ok
 
-        //console.log("last",lastUserHtmlStrEl,"current",curUserHtmlStrEl)
-       // lastUserHtmlStrEl=curUserHtmlStrEl 
-        //$(lastUserHtmlStrEl)=userElement //incorrect
 }
 //var lastUserElement=$(lastUserHtmlStrEl)
 function deleteSelectedUserHtmlOneByOne(){
-    $("#selectedUsers").children().last().prev().remove() //ok
-    //$("#selectedUsers :nth-last-child(2)").remove() //OK
-    //$("#selectedUsers .selectedUser:nth-last-of-type(1)").remove() //ok
-    //$("#selectedUsers span:nth-last-of-type(1)").remove() //OK
-    //$("#selectedUsers .selectedUser").last().remove()//OK
-    //$("#selectedUsers span").last().remove()//OK same as above
-    //$("#selectedUsers .selectedUser:last").remove() //OK
-    //$("#selectedUsers span:last").remove() //ok same as above
-    //$("#userSearchTextbox").closest('.selectedUser').remove()//no as closest travel up DOM tree (from curEl to parent())
-    //$("#userSearchTextbox").siblings().last().remove();//ok next() prev() first() last()
-    //$("#userSearchTextbox").prev('.selectedUser').remove() //ok
-    //$("#userSearchTextbox").prev('span').remove()//ok same as above
-    //remove #selectedUsers' last child or remove teh el closest to usersearchtextbox //slow pointer as records
-    //var tempUserElement=$(lastUserHtmlStrEl).prev(); $(lastUserHtmlStrEl).remove(); //not quite right
-    //var tempUserElement=lastUserElement.prev(); lastUserElement.remove();lastUserElement=tempUserElement //not right
+    $("#selectedUsers").children().last().prev().remove() 
 
 }
 
@@ -186,7 +128,7 @@ function createUserHtml(userData,showFollowButton){ //no show followBtn for grou
     var buttonClass = isFollowing?"followButton following":"followButton"
 
     var followButton=""
-    if(showFollowButton && userLoggedInJs._id != userData._id){ //both ._id strings?!
+    if(showFollowButton && userLoggedInJs._id != userData._id){ 
         followButton = `<div class='followBtnContainer'> 
                             <button class='${buttonClass}' data-user='${userData._id}'>${text}</button>
                         </div>`
@@ -214,7 +156,7 @@ function createUserHtml(userData,showFollowButton){ //no show followBtn for grou
 
 
 
-//below one can be in commonJs too; wherever selelctedUsers is first declared, the script comes first
+//could be in commonJs too; wherever selelctedUsers is first declared, the script comes first
 $('#createChatButton').click(()=>{
     console.log('selectedUsers',selectedUsers)
     var data=JSON.stringify(selectedUsers) //ajax cannot send array to server in array form -> need convert to string
