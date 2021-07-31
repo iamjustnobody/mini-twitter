@@ -1,10 +1,3 @@
-//below copied from notificationPage.Js (only loaded & applied to notificationPagePug)
-//this js is made to be used in all/any page -> loaded in main-layoutsPug -> just like commonJs applied to multiple pages
-//-> making same codes in notificationPageJs (where following codes are copied from) optional/redundent & can be removed
-//or may not need to create this js -> just copy same codes to commonJs which is however including too many vips
-//so the original codes from notificationPage.js copied here (just like common js), the following/original codes can be called in commonJs
-//when not in notificationPagePug, adn the following/original codes can be applied in any page as this js is part of baseJs (just like commonJs) used for any page
-//such that createHtml fn can be called in commonJs showPOPup on any page, whcih can then be called in clientSocketJs on any page
 
 
 function createNotificationHtml(notification){ //resultsImageContainer from inboxPageJs
@@ -12,8 +5,6 @@ function createNotificationHtml(notification){ //resultsImageContainer from inbo
     var text=getNotificationText(notification) //stirng of html
     var url=getNotificationUrl(notification)
     var classname=notification.opened?"":'active';
-    console.log('createNotificationHtml',typeof notification); //obj
-    console.log(notification._id,typeof notification._id,notification.id,typeof notification.id)///string; undefined undefined
 
     return `<a href='${url}' class="resultListItem notification ${classname}" data-id="${notification._id}"> 
                 <div class="resultsImagesContainer">
@@ -63,7 +54,7 @@ function getNotificationUrl(notification){
 
 
 
-//just like the above, copied from inboxPageJs 
+// copied from inboxPageJs 
 //such that createHtml fn can be called in commonJs for showPOPup then called in clientSocketJs on any page
 function createChatHtml(chatData){
     var chatname=chatData.chatName?chatData.chatName:getOtherChatUsersNamesString(chatData.users); //also copied to chatPageJs
@@ -78,13 +69,12 @@ function createChatHtml(chatData){
                     <span class='heading ellipsis'>${chatname}</span>
                     <span class='subText ellipsis'>${latestMsg}</span>
                 </div>
-            </a>`; //return html ///messagesRoutes url path
+            </a>`; 
 }
 
 function getLatestMsg(latestMsg){ //populate chatData.latestMessage
     if(latestMsg!=null){
         var sender=latestMsg.sender
-        //return `${latestMsg.msgContent}` //undefined if not populate chat.latestMessage at chatsJs get'/api/chats'
         return `${sender.fName} ${sender.lName}: ${latestMsg.msgContent}` 
         //also need to populate chatData.latestMessage.sender chatsJs get'/api/chats'
     } //latestMessage from POST request @messagesJs api route
@@ -98,14 +88,17 @@ function getOtherChatUsersNamesString(users){
     var namesArray=otherChatUsers.map(user=>{return user.fName+" "+user.lName})
     return namesArray.join(", ")
 }
-
+//copied to chatPage.js; or move above to commonJs
 function getOtherChatUsers(users){
     if(users.length==1) return users
     return users.filter(user=>{
         return user._id!==userLoggedInJs._id
     })
 }
-//above two fn copied to chatPage.js; or move above to commonJs
+//copied to chatPage.js; or move above to commonJs
+
+
+
 function getChatImageElments(chatData){
     var otherChatUsers=getOtherChatUsers(chatData.users);
     var chatImages=getChatUserImageElement(otherChatUsers[0])
@@ -130,5 +123,5 @@ $(document).on('click','.notification.active',(e)=>{
     var href=container.attr("href")
     e.preventDefault()
     var cb=()=>window.location=href
-    markNotificationAsOpened(notificationId,cb) //in commonJs; run markNotificationAsOpened then execute cb above going to a href
+    markNotificationAsOpened(notificationId,cb) //in commonJs; run markNotificationAsOpened then execute cb -href
 }) 
