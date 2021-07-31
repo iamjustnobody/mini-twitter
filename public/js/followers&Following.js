@@ -4,7 +4,7 @@ $(document).ready(()=>{
     loadFollowers() 
 })
 function loadFollowers(){ 
-    $.get(`/api/users/${profileID}/${selectFlws?'followers':'following'}`,(getUser)=>{ //this profile user with profileID
+    $.get(`/api/users/${profileID}/${selectFlws?'followers':'following'}`,(getUser)=>{ 
         selectFlws?outputUsers(getUser.followers,$('.resultsContainer'))
         :outputUsers(getUser.following,$('.resultsContainer'))
         
@@ -13,8 +13,6 @@ function loadFollowers(){
 
 
 
-//now below moves to common.js as not only f&F use these fn search also use these when searching users
-//or keep here & copy paste teh same to search.js
 
 function outputUsers(getUsersData,container){
     container.html("")
@@ -30,12 +28,10 @@ function outputUsers(getUsersData,container){
 
 }
 
-function createUserHtml(userData,showFollowButton){ //no show followBtn for group chat
+function createUserHtml(userData,showFollowButton){ //not show followBtn for group chat
 
     var name=userData.fName+" "+userData.lName
     var isFollowing= userLoggedInJs.following && userLoggedInJs.following.includes(userData._id)
-//just like userLoggedIn_profile.following && userLoggedIn_profile.following.includes(profileUsrid) in profilePage.pug
-//userLoggedInJs@JS here is JSON.parse(JSON.stringify(userLoggedIn_profile@pug))
 
     var text = isFollowing?"Following":"Follow"
     var buttonClass = isFollowing?"followButton following":"followButton"
@@ -47,9 +43,6 @@ function createUserHtml(userData,showFollowButton){ //no show followBtn for grou
                         </div>`
                         
     }
-//data-user='${userData._id}' or data-user=userData._id //ok //class='${buttonClass}' or class=buttonClass
-//just like createFollowButon in mixin.pug
-
     return `<div class="user">
                 <div class='userImageContainer'>
                     <img src='${userData.profilePic}'>
@@ -63,14 +56,5 @@ function createUserHtml(userData,showFollowButton){ //no show followBtn for grou
                 ${followButton}
             </div>`
 
-    //`<img src=${userData.profilePic}>` or `<img src="${userData.profilePic}">` <img src='${userData.profilePic}'>
-    //all ok
-    /*
-    return 
-    <div class="user">
-        <div class='userImageContainer'>
-            <img src=`${userData.profilePic}`/>
-        </div>
-    </div>
-    */
+
 }
