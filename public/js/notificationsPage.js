@@ -11,8 +11,7 @@ function outputNotificationList(notifications,container){
         container.append(html)
     })
     if(notifications.length==0){
-        container.append("<span class='noResults'>Nothing to show</span>") //append html string
-        //or backtick (def backticks if there's ${} in <> or between <></>)
+        container.append("<span class='noResults'>Nothing to show</span>") 
     }
 }
 function createNotificationHtml(notification){ //resultsImageContainer from inboxPageJs
@@ -64,9 +63,7 @@ function getNotificationUrl(notification){
     else if(notificationType=="follow"){
         url=`/profile/${notification.entityId}`
     }
-    return url //backend entityId always o/p as objId in newNote 
-    //(see apiRoutes insernotifications in postsJs for retweet like comment; usersJs for follow)
-    //as entityId defined as mongoTypeObjId in notificationSchema & neever populated ?
+    return url 
 }
 
 
@@ -79,6 +76,6 @@ $(document).on('click','.notification.active',(e)=>{
     var href=container.attr("href")
     e.preventDefault()
     var cb=()=>window.location=href
-    markNotificationAsOpened(notificationId,cb) //in commonJs; run markNotificationAsOpened then execute cb above going to a href
-}) //click one of unread/unopened notifications see above createNotificationHtml
+    markNotificationAsOpened(notificationId,cb) //in commonJs; run markNotificationAsOpened then execute cb -> href
+}) //click one of unread/unopened notifications -> createNotificationHtml
 $("#markNotificationsAsRead").click(()=> markNotificationAsOpened()) //click to markALl notifications as read/opened
