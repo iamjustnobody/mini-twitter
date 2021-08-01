@@ -2,35 +2,11 @@ extends layouts/main-layout
 //- similar to home.pug here
 
 block content
-    //-p 
-        p #{postID} #{typeof postID} #{`${postID}`} #{typeof `${postID}`}
-        //- xx stirng xx string
-        p #{JSON.stringify(postID)} #{typeof JSON.stringify(postID)} #{`${JSON.stringify(postID)}`} #{typeof `${JSON.stringify(postID)}`}
-        //- "xx" stirng "xx" string
-        p #{JSON.parse(JSON.stringify(postID))} #{typeof JSON.parse(JSON.stringify(postID))} #{`${JSON.parse(JSON.stringify(postID))}`} #{typeof `${JSON.parse(JSON.stringify(postID))}`}
-        //- xx stirng xx string
     script. 
-        //-var userLoggedInJs_post=!{userLoggedInJs_post} //but use userLoggedInJs in common.js
         var userLoggedInJs=!{userLoggedInJs_post} 
-        //-!{`${userLoggedInJs_post}`} obj var xx={"x":"x","y":"y"} or !{userLoggedInJs_post}
-        //-#{`${userLoggedInJs_post}`} or #{userLoggedInJs_post} error var xx={&}
     script. 
         var postID='!{postID}'
-        //- postID='!{`${postID}`}' string var x="x" or postID='!{postID}' //or '#{`${postID}`}' or '#{postID}'
-        //-////- if postID=!{postID} or !{`${postID}`}, then <div data- numberish/nonString>; stringify postID; <div data- string>; 
-        //- to be used in postPage.js (isStringType from postRoutes)
-        //-////- otherwise syntax error - invalid or unexpected token; also postID undefined in postPage.js
-        //-var postID=!{postID}; var postID is string - wrong now; var postID='!{postID}'; var postID is string too
-        //-!{`${postID}`} or !{`${postID}`} var xx=non-string number or var xx=xx
-    //-.testLoginUserPost(data-currentUser=`${userLoggedInJs_post}` data-postid='postID')
-        //-`${userLoggedInJs_post}` or userLoggedInJs_post or userLoggedIn_post; =postID or =`${postID}`
-    
-        //-script. 
-            var postID='!{postID}'
-        //- in parallel with (/before).testLoginUserPost or here pushed inside .testLoginUserPost in parallel with .postsContainer
-    //-if testLoginUserPost, push below inside testLoginUserPost
     .postsContainer
-    //-(data-testuser=userLoggedIn_post) or `${userLoggedInJs_post}` or userLoggedInJs_post
 
     +createReplyModal(userLoggedIn_post)
     +createDeletePostModal(userLoggedIn_post)
