@@ -3,20 +3,9 @@ extends layouts/main-layout
 block content
     script. 
         var userLoggedInJs=!{userLoggedInJs}
-    //-.homeContent(data-currentUser=`${userLoggedInJs}`)
-        //-.homeContent(data-currentUser=curLoggedInUser.userLoggedInJs)
-        //- for dataset (used just in pug now) also used in javascript, adding .homecontent class & data- attribute
-        //- (data-currentUser=userLoggedIn) data-currentUser=`${JSON.stringify(userLoggedIn)}` or data-currentUser=JSON.stringify(userLoggedIn)
-        //-or `${userLoggedInJs}` or userLoggedInJs or data-currentUser=`${JSON.parse(userLoggedInJs)}` or data-currentUser=JSON.parse(userLoggedInJs)
-        //- replacing userLoggedInJs with curLoggedInUser.userLoggedInJs if app.js & middleware use res.locals reaplcing payload
-        //-the above presentations (payload) also apply to res.locals curLoggedInUser.userLoggedInJs & curLoggedInUser.userLoggedIn
-    //-.testLoginUserHome(data-currentUser=`${userLoggedInJs}`)   
-        //-`${userLoggedInJs}` or userLoggedInJs or userLoggedIn
-
-    //-if testLoginUserHome, push below inside testLoginUserHome
-    //-p #{userLoggedIn.fName} #{userLoggedIn.lName}
+    
     +createPostForm(userLoggedIn)
-    //-+createPostForm(curLoggedInUser.userLoggedIn) //ok but +createPostForm(`${curLoggedInUser.userLoggedIn}`) NOT ok
+    //-+createPostForm(curLoggedInUser.userLoggedIn) 
     .postsContainer 
 
     +createReplyModal(userLoggedIn)
