@@ -7,7 +7,7 @@ mixin createPostForm(userLoggedIn)
             .buttonsContainer 
                 button#submitPostButton(disabled='') Post
 
-//-src=`${userLoggedIn.profilePic}` or src=userLoggedIn.profilePic both ok
+//-src=`${userLoggedIn.profilePic}` userLoggedIn.profilePic 
 mixin createReplyModal(userLoggedIn)
     #replyModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='replyModalLabel', aria-hidden='true')
         .modal-dialog(role='document')
@@ -53,7 +53,7 @@ mixin createFollowButton(user,isFollowing)
     //-button(class=buttonClass,data-userid=user._id) #{text}
     button(class=`${buttonClass}`,data-userid=`${user._id}`)=`${text}` 
     //-button(class=`${buttonClass}`,data-userid=user._id)=text
-    //-above three ok
+
 
 mixin createTab(name, href, isSelected)
     - className = isSelected ? "tab active" : "tab"
@@ -173,12 +173,6 @@ mixin createChatNameModal(chat)
                         span(aria-hidden='true') &times;
                 .modal-body
                     input#chatNameTextbox(type="text", placeholder='Enter a name for this chat',value=chat.chatName) 
-                    //- or value=chat.chatName or value=`${chat.chatName}`     
-                    //- chat.chatName: if no chatName field in db then no value field in html Element inspect; if chatName='' indb then <value>
-                    //- both above show placeholder in the inputbox bar
-                    //- `${chat.chatName}`: if no chatName field in db then <value="undefined"> in html Element inspect;
-                    //- `${chat.chatName}`: if chatName='' indb then <value> & shows placeholder in the inputbox bar
-                    //- value=`${chat.chatName}` or value=chat.chatName show either defualt name or chat name if both defined in '/messages/chatid' messagesRoutesJs
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
                     button#chatNameButton.btn.btn-primary(type='button') Save
