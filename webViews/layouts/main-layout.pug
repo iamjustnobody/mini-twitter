@@ -8,35 +8,17 @@ html(lang="en")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         title #{pageTitle}
 
-        link(rel='stylesheet',href='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-alpha.1/cropper.min.css')
-        //-does not matter the order of cropper css & bootstrap css
-        //-or put just on profilePage // but if tweet with image then needs to be here @main-layouts
+        link(rel='stylesheet',href='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-alpha.1
 
         link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous')
         link(rel="stylesheet", href="/css/main.css") 
 
     body
-        //-body.testLoginUser(data-currentUser=userLoggedIn) 
-            //- `${userLoggedInJs}` or  =userLoggedInJs or =userLoggedIn
         script. 
             var userLoggedInJs_base=!{userLoggedInJs || userLoggedInJs_post || userLoggedInJs_profile || userLoggedInJs_inbox || userLoggedInJs_newMsg || userLoggedInJs_chat ||userLoggedInJs_search || userLoggedInJs_notification}  
-            //- incorrect var userLoggedInJs_base=!{userLoggedInJs} || !{userLoggedInJs_post} || !{userLoggedInJs_profile} || !{userLoggedInJs_inbox} || !{userLoggedInJs_newMsg} || !{userLoggedInJs_chat} ||!{userLoggedInJs_search}  
-            //- alternatively adding userLoggedInJs_base field to non-apiRoutes' payloads that'd be used in corresponding pugs
-        //-script. 
-            var userLoggedInJs=!{userLoggedInJs}
-            //-var userLoggedInJs=!{userLoggedInJs} //obj open@homePage (log@commonJs/homeJs)//[object Object] string open@profilePage (log@common/profilePageJs)
-            //-var userLoggedIn=!{userLoggedIn} //wrong error
-            //-var userLoggedInJs='!{userLoggedInJs}' //string open@homePage (log@commonJs/homeJs)//"[object Object]" string open@profilePage (log@common/profilePageJs)
-            //-using above,userLoggedInJs._id not changing btn color/css class @commmon.js if retweet or like
-            //-var userLoggedIn='!{userLoggedIn}' //[object Object] string open@homePage (log@commonJs/homeJs)//[object Object] string open@profilePage (log@common/profilePageJs)
-            
-            //- or data- attribute in home.pug  - from app.js get'/'; to be used in common.js
-        //-p type of userLoggedInJs #{typeof userLoggedInJs} //string //refers to inner userLoggedInJs
-        //-p type of userLoggedIn #{typeof userLoggedIn} //obj
 
-        //-body.testLoginUser(data-currentUser=userLoggedIn_profile)  
-        //- `${userLoggedInJs_profile}` or  =userLoggedInJs_profile or =userLoggedIn_profile
-        //-script. 
+            var userLoggedInJs=!{userLoggedInJs}
+
             var userLoggedInJs=!{userLoggedInJs_profile}
 
         .wrapper
@@ -77,27 +59,23 @@ html(lang="en")
 
         script(src="https://kit.fontawesome.com/033b2a0354.js" crossorigin="anonymous")
 
-        //-script(src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous")
         script(src='https://code.jquery.com/jquery-3.6.0.min.js' integrity='sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=' crossorigin='anonymous')
         script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js' integrity='sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1' crossorigin='anonymous')
         script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js' integrity='sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM' crossorigin='anonymous')
-        //-script(src='https://code.jquery.com/jquery-3.6.0.min.js' integrity='sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=' crossorigin='anonymous')
-            //-foundation scripts as scripts below may use these above //need to in above order to make Modal pop up
+
 
         //-jquery above cropperJs
         script(src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-alpha.1/cropper.min.js")
-        //-or put just on profilePage // but if tweet with image then needs to be here @main-layouts
 
         script(src='https://cdn.socket.io/3.1.3/socket.io.min.js')
-        //-https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.3/socket.io.min.js
 
 
         block scripts 
-        //-ok
+
 
         script(src='/js/common.js')
         script(src='/js/notificationPopupHtml.js')
         script(src='/js/clientSocket.js')
 
         //-block scripts 
-        //-ok too depending on const userLoggedInJs=xx defined in common.js or homeJs
+        //-depending on const userLoggedInJs=xx defined in common.js or homeJs
